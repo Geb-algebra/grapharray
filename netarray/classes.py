@@ -221,25 +221,6 @@ class GraphArray(BaseGraphArray):
             raise ValueError("assign_to must be 'node' or 'edge'")
         return res_graph
 
-    def _create_operation_result_object(self, array):
-        """Create an object of the same class as self with given array.
-
-        This is used to create the result object of mathematical operations.
-
-        This is a dummy implementation here. You must implement this to enable
-        mathematical operations.
-
-        Args:
-            array (np.ndarray): The array of operation result.
-
-        Returns:
-            An instance of the same class as self that has the result array.
-        """
-        # fixme: If there exists any way to create a new object of
-        #     self.__class__, this function is not needed,
-        #     but I don't know how.
-        pass
-
     def _operation(self, other, operation_func):
         """Do an arithmetic operation.
 
@@ -258,7 +239,9 @@ class GraphArray(BaseGraphArray):
         else:
             #  same as res.array  = self.array {+, -, * etc.} other.array
             res_array = operation_func(other.array)
-        return self._create_operation_result_object(res_array)
+        return type(self)(self.base_graph,
+                          init_val=res_array,
+                          is_array_2d=self.is_2d)
 
     def __getitem__(self, key):
         """Returns the array element linked to the 'key' node/edge.
@@ -321,21 +304,6 @@ class NodeArray(GraphArray):
         """Correspondence between the array indices and the nodes/edges."""
         return self.base_graph.node_to_index
 
-    def _create_operation_result_object(self, array):
-        """Create a NodeArray object with given array.
-
-        This is used to create the result object of mathematical operations.
-
-        Args:
-            array (np.ndarray): The array of operation result.
-
-        Returns:
-            (NodeArray) An instance that has the result array.
-        """
-        return NodeArray(self.base_graph,
-                         init_val=array,
-                         is_array_2d=self.is_2d)
-
     def as_nx_graph(self):
         """Return a nx.DiGraph with the array elements as its node attributes.
         """
@@ -349,21 +317,6 @@ class EdgeArray(GraphArray):
     def index(self):
         """Correspondence between the array indices and the nodes/edges."""
         return self.base_graph.edge_to_index
-
-    def _create_operation_result_object(self, array):
-        """Create a EdgeArray object with given array.
-
-        This is used to create the result object of mathematical operations.
-
-        Args:
-            array (np.ndarray): The array of operation result.
-
-        Returns:
-            (EdgeArray) An instance that has the result array.
-        """
-        return EdgeArray(self.base_graph,
-                         init_val=array,
-                         is_array_2d=self.is_2d)
 
     def as_nx_graph(self):
         """Return a nx.DiGraph with the array elements as its edge attributes.
