@@ -2,22 +2,18 @@
 """
 
 from __future__ import annotations
-from typing import Union
 import numpy as np
 import networkx as nx
 from types import MappingProxyType
 
 
 class BaseGraph(nx.DiGraph):
-    """ Directed graph object on which variables are defined.
+    """ Directed graph object on which arrays are defined.
 
-    This object works
-    - as a key to check if variables are defined on the same network and
-    - as a holder of the orders of nodes and edges.
+    This object works (1) as a key to check if variables are defined on
+    the same network and (2) as a holder of the orders of nodes and edges.
     Note that this object itself does not contain any variables.
 
-    Notes: These two attributes are referred from all variables defined on this
-        object as read-only properties.
     """
 
     def __init__(
@@ -54,7 +50,7 @@ class BaseGraph(nx.DiGraph):
 
 
 class BaseGraphArray:
-    """ Base graph variable object.
+    """ Base object for creating vectors and matrices on networks.
 
     This set up attributes used in both node variables and edge variables.
     All attributes are aliases of that of BaseGraph and thus are read-only.
@@ -125,35 +121,37 @@ class BaseGraphArray:
 
 
 class GraphArray(BaseGraphArray):
-    """Extracted codes shared between NodeVar and EdgeVar.
+    """Extracted codes shared between NodeArray and EdgeArray.
+
+    Args:
+        base_graph (BaseGraph): The graph on that the variable is defined.
+        init_val: The initial value of the array.
+        is_array_2d (bool): Whether the array is 2-dimensional column vectors.
+            Default is False, which means that the array is 1-dimensional.
+
+    Notes:
+        init_val must be either scalar, NodeVar object or
+        {node: value} dictionary.
+        if a scalar is given, all elements of array are set to the init_val.
+        if a NodeVar object is given, a copy of its array is used
+        as initial values.
+        if a dictionary is given, the value on each node/edge is used
+        as initial value of corresponding node/node.
+        if np.ndarray is given, it is directly used as the initial values.
+        This is used to make arithmetic operations faster
+        by avoiding unnecessary array creation.
+
+    Attributes:
+        array (np.ndarray): An array that has values linked to nodes/edges.
+
     """
     def __init__(
             self,
             base_graph: BaseGraph,
             init_val: any = 0,
-            is_array_2dim: bool = False
+            is_array_2d: bool = False
     ):
-        """Set initial value of variables.
-
-        Args:
-            base_graph: A BaseGraph object on that the variable is defined.
-            init_val: The initial value of the array of variables.
-            is_array_2dim:
-
-        Notes:
-            init_val must be either scalar-value, NodeVar object,
-            {node: value} dictionary, nx.DiGraph with 'value' attributes
-            on all nodes.
-            if a scalar-value is given, all values are set to init_val.
-            if a NodeVar object is given, a copy its array is used
-            as initial values.
-            if a dictionary or nx.DiGraph is given,
-            the value on each node is used
-            as initial value of corresponding node.
-            if np.ndarray is given, it is directly used as the initial values.
-            This is used to make arithmetic operations faster
-            by avoiding unnecessary array creation.
-        """
+        """Set the initial value of array."""
         super(GraphArray, self).__init__(base_graph)
         if isinstance(init_val, np.ndarray):
             self.array = init_val
@@ -172,37 +170,33 @@ class GraphArray(BaseGraphArray):
                     f'Init_val must be either '
                     f'{type(self)}, scalar, dict or np.ndarray.'
                 )
-        self._is_2dim = is_array_2dim
-        if is_array_2dim:  # reshape the array to 2-dimension.
+        self._is_2d = is_array_2d
+        if is_array_2d:  # reshape the array to 2-dimension.
             self.array = self.array.reshape((-1, 1))
-        self.array_shape = self.array.shape
-
-    def _initialize_array_other_than_array_and_self(self, init_val):
-        """Initialize self.array with other types than supported this class.
-
-        This is only a dummy implementation here. You can implement any
-        initialization method by creating subclasses and overriding
-        this method.
-        """
-        pass
 
     @property
-    def is_2dim(self):
-        return self._is_2dim
+    def is_2d(self):
+        """Whether the array is 2-dimensional or not."""
+        return self._is_2d
 
     @property
     def is_transposed(self):
+        """Whether the array is transposed (i.e., 2-d row vector) or not."""
         return self._is_transposed
 
     @property
     def T(self):
-        """Transpose the array"""
+        """Transpose the array."""
         self.array = self.array.T
         self._is_transposed = not self._is_transposed
         return self
 
     @property
     def index(self):
+        """Correspondence between the array indices and the nodes/edges.
+
+        This is only a dummy implementation here and overridden in subclasses.
+        """
         return {}
 
     def as_dict(self) -> dict:
@@ -212,8 +206,7 @@ class GraphArray(BaseGraphArray):
         return value
 
     def as_nx_graph(self, assign_to=None):
-        """
-        return a nx.DiGraph with values of variables as node/edge attributes.
+        """Return a nx.DiGraph with the array elements as node/edge attributes.
         """
         var_dict = self.as_dict()
         res_graph = nx.DiGraph(self.base_graph)
@@ -236,21 +229,26 @@ class GraphArray(BaseGraphArray):
         This is a dummy implementation here. You must implement this to enable
         mathematical operations.
 
-        If there exists any way to create a new object of self.__class__,
-        this function is not needed, but I don't know how.
+        Args:
+            array (np.ndarray): The array of operation result.
+
+        Returns:
+            An instance of the same class as self that has the result array.
         """
+        # fixme: If there exists any way to create a new object of
+        #     self.__class__, this function is not needed,
+        #     but I don't know how.
         pass
 
     def _operation(self, other, operation_func):
-        """Arithmetic operation.
+        """Do an arithmetic operation.
 
         Args:
             other: An instance operated with self.
-            operation_func: Either self.__add__, self.__sub__,
-                self.__mul__ or self.__truediv__.
+            operation_func: Magic method for operation, like self.__add__.
 
         Returns:
-            An instance containing the operation result.
+            An instance of the same class as self containing the result.
 
         """
         self._operation_error_check(other, (int, float, self.__class__))
@@ -262,18 +260,26 @@ class GraphArray(BaseGraphArray):
             res_array = operation_func(other.array)
         return self._create_operation_result_object(res_array)
 
-    def __getitem__(self, item):
-        index = self.index[item]
-        if self.is_2dim:
+    def __getitem__(self, key):
+        """Returns the array element linked to the 'key' node/edge.
+
+        This is called by self[key].
+        """
+        index = self.index[key]
+        if self.is_2d:
             if self.is_transposed:
                 index = (0, index)
             else:
                 index = (index, 0)
         return self.array[index]
 
-    def __setitem__(self, item, value):
-        index = self.index[item]
-        if self.is_2dim:
+    def __setitem__(self, key, value):
+        """Set a value to the array element linked to the 'key' node/edge.
+
+        This is called by self[key] = value.
+        """
+        index = self.index[key]
+        if self.is_2d:
             if self.is_transposed:
                 index = (0, index)
             else:
@@ -312,14 +318,27 @@ class NodeArray(GraphArray):
     """
     @property
     def index(self):
+        """Correspondence between the array indices and the nodes/edges."""
         return self.base_graph.node_to_index
 
     def _create_operation_result_object(self, array):
+        """Create a NodeArray object with given array.
+
+        This is used to create the result object of mathematical operations.
+
+        Args:
+            array (np.ndarray): The array of operation result.
+
+        Returns:
+            (NodeArray) An instance that has the result array.
+        """
         return NodeArray(self.base_graph,
                          init_val=array,
-                         is_array_2dim=self.is_2dim)
+                         is_array_2d=self.is_2d)
 
     def as_nx_graph(self):
+        """Return a nx.DiGraph with the array elements as its node attributes.
+        """
         return super(NodeArray, self).as_nx_graph(assign_to='node')
 
 
@@ -328,14 +347,27 @@ class EdgeArray(GraphArray):
     """
     @property
     def index(self):
+        """Correspondence between the array indices and the nodes/edges."""
         return self.base_graph.edge_to_index
 
     def _create_operation_result_object(self, array):
+        """Create a EdgeArray object with given array.
+
+        This is used to create the result object of mathematical operations.
+
+        Args:
+            array (np.ndarray): The array of operation result.
+
+        Returns:
+            (EdgeArray) An instance that has the result array.
+        """
         return EdgeArray(self.base_graph,
                          init_val=array,
-                         is_array_2dim=self.is_2dim)
+                         is_array_2d=self.is_2d)
 
     def as_nx_graph(self):
+        """Return a nx.DiGraph with the array elements as its edge attributes.
+        """
         return super(EdgeArray, self).as_nx_graph(assign_to='edge')
 
 
@@ -349,6 +381,7 @@ class BaseMatrix(BaseGraphArray):
 
     @property
     def is_transposed(self):
+        """Whether the matrix is transposed or not."""
         return self._is_transposed
 
     @property
@@ -389,13 +422,7 @@ class AdjacencyMatrix(BaseMatrix):
 
         res_array = self.matrix @ other.array
         return NodeArray(self.base_graph, init_val=res_array,
-                         is_array_2dim=other.is_2dim)
-
-    def getrow(self, index):
-        return self.matrix.getrow(self.base_graph.nodes[index]['index'])
-
-    def getcol(self, index):
-        return self.matrix.getcol(self.base_graph.nodes[index]['index'])
+                         is_array_2d=other.is_2d)
 
 
 class IncidenceMatrix(BaseMatrix):
@@ -419,7 +446,7 @@ class IncidenceMatrix(BaseMatrix):
         """Return the result of self multiplied by NodeVar or EdgeVar.
 
         Args:
-            other:
+            other: EdgeVar if not transposed, otherwise NodeVar.
 
         Returns:
             NodeVar if not transposed, otherwise EdgeVar.
@@ -440,4 +467,4 @@ class IncidenceMatrix(BaseMatrix):
 
         res_array = self.matrix @ other.array
         return type_result(self.base_graph, init_val=res_array,
-                           is_array_2dim=other.is_2dim)
+                           is_array_2d=other.is_2d)

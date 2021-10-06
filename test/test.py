@@ -17,20 +17,19 @@ def compare_array(a, b):
 
 class GraphVarBaseTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        #Tested by the Braess' network
+        #  Tested by the Braess' network
         g = [(0, 2), (0, 4), (2, 4), (2, 6), (4, 6)]
         self.graph = BaseGraph(nx.DiGraph(g))
         self.var_types = ['node', 'edge']
         self.num_nodes_and_edges = {'node': 4, 'edge': 5}
 
     def test_is_order_correct(self):
-        for tp in ['node', 'edge']:
-            gvar = BaseGraphArray(self.graph)
-            self.assertEqual(
-                gvar.ordered_edges, ((0, 2), (0, 4), (2, 4), (2, 6), (4, 6)))
-            self.assertEqual(
-                gvar.ordered_nodes, (0, 2, 4, 6)
-            )
+        gvar = BaseGraphArray(self.graph)
+        self.assertEqual(
+            gvar.ordered_edges, ((0, 2), (0, 4), (2, 4), (2, 6), (4, 6)))
+        self.assertEqual(
+            gvar.ordered_nodes, (0, 2, 4, 6)
+        )
 
 
 class NodeArrayTestCase(unittest.TestCase):
@@ -55,7 +54,7 @@ class NodeArrayTestCase(unittest.TestCase):
         self.assertTrue(compare_array(gvar.array, weight))
 
     def test_is_vertical_array_available(self):
-        gvar = NodeArray(self.graph, is_array_2dim=True)
+        gvar = NodeArray(self.graph, is_array_2d=True)
         self.assertEqual(gvar.array.shape, (4, 1))
 
     def test_is_var_dict_correct(self):
@@ -81,7 +80,7 @@ class NodeArrayTestCase(unittest.TestCase):
         gvar = NodeArray(self.graph, init_val=init_val)
         for n in init_val:
             self.assertEqual(gvar[n], init_val[n])
-        gvar = NodeArray(self.graph, init_val=init_val, is_array_2dim=True)
+        gvar = NodeArray(self.graph, init_val=init_val, is_array_2d=True)
         for n in init_val:
             self.assertEqual(gvar[n], init_val[n])
 
@@ -89,7 +88,7 @@ class NodeArrayTestCase(unittest.TestCase):
         gvar = NodeArray(self.graph)
         gvar[2] = 5
         self.assertTrue(compare_array(gvar.array, np.array([0, 5, 0, 0])))
-        gvar = NodeArray(self.graph, is_array_2dim=True)
+        gvar = NodeArray(self.graph, is_array_2d=True)
         gvar[2] = 5
         self.assertTrue(compare_array(gvar.array,
                                       np.array([0, 5, 0, 0]).reshape((-1, 1))))
@@ -135,8 +134,8 @@ class NodeArrayTestCase(unittest.TestCase):
         gvar_1 = NodeArray(self.graph, init_val=5)
         gvar_2 = NodeArray(self.graph, init_val=10)
         self.assertEqual(gvar_1 @ gvar_2, 200)
-        gvar_1 = NodeArray(self.graph, init_val=5, is_array_2dim=True)
-        gvar_2 = NodeArray(self.graph, init_val=10, is_array_2dim=True)
+        gvar_1 = NodeArray(self.graph, init_val=5, is_array_2d=True)
+        gvar_2 = NodeArray(self.graph, init_val=10, is_array_2d=True)
         self.assertEqual(gvar_1.T @ gvar_2, 200)
 
 
@@ -183,7 +182,7 @@ class EdgeArrayTestCase(unittest.TestCase):
         gvar = EdgeArray(self.graph, init_val=init_val)
         for n in init_val:
             self.assertEqual(gvar[n], init_val[n])
-        gvar = EdgeArray(self.graph, init_val=init_val, is_array_2dim=True)
+        gvar = EdgeArray(self.graph, init_val=init_val, is_array_2d=True)
         for n in init_val:
             self.assertEqual(gvar[n], init_val[n])
 
@@ -191,7 +190,7 @@ class EdgeArrayTestCase(unittest.TestCase):
         gvar = EdgeArray(self.graph)
         gvar[0, 4] = 5
         self.assertTrue(compare_array(gvar.array, np.array([0, 5, 0, 0, 0])))
-        gvar = EdgeArray(self.graph, is_array_2dim=True)
+        gvar = EdgeArray(self.graph, is_array_2d=True)
         gvar[0, 4] = 5
         self.assertTrue(compare_array(
             gvar.array, np.array([0, 5, 0, 0, 0]).reshape((-1, 1))))
