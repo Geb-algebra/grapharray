@@ -5,3 +5,15 @@ netarray.classes module
    :members:
    :undoc-members:
    :show-inheritance:
+
+   .. autosummary::
+      :toctree: _gen
+
+      BaseGraph
+      BaseGraphArray
+      GraphArray
+      NodeArray
+      EdgeArray
+      BaseMatrix
+      AdjacencyMatrix
+      IncidenceMatrix

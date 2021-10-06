@@ -33,7 +33,7 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.viewcode',
     'sphinx.ext.todo',
-    'nbsphinx',
+    'nbsphinx'
 ]
 
 autosummary_generate = True
