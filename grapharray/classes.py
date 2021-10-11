@@ -17,12 +17,11 @@ class BaseGraph(nx.DiGraph):
     """
 
     def __init__(
-            self,
-            graph: nx.DiGraph,
+        self, graph: nx.DiGraph,
     ):
         """Run DiGraph.__init__ and setup attributes for defining variables."""
         if not isinstance(graph, nx.DiGraph):
-            raise TypeError('graph must be an instance of nx.DiGraph')
+            raise TypeError("graph must be an instance of nx.DiGraph")
         super(BaseGraph, self).__init__(graph)
         nx.freeze(self)
         self._node_to_index = MappingProxyType(
@@ -57,8 +56,7 @@ class BaseGraphArray:
     """
 
     def __init__(
-            self,
-            base_graph: BaseGraph,
+        self, base_graph: BaseGraph,
     ):
         """Store BaseGraph instance on that the variable is defined."""
         self._base_graph = base_graph
@@ -104,20 +102,23 @@ class BaseGraphArray:
         """
         if not isinstance(other, allowed_classes):
             raise TypeError(
-                f'{type(self)} can be operated only with '
-                f'{allowed_classes}, not {type(other)}.'
+                f"{type(self)} can be operated only with "
+                f"{allowed_classes}, not {type(other)}."
             )
-        elif isinstance(other, BaseGraphArray) and \
-                id(other.base_graph) != id(self.base_graph):
+        elif isinstance(other, BaseGraphArray) and id(other.base_graph) != id(
+            self.base_graph
+        ):
             raise ValueError(
-                f'Cannot compute between variables '
-                f'associated with different graphs.'
+                f"Cannot compute between variables "
+                f"associated with different graphs."
             )
 
     def __str__(self):
-        return (f"{self.__class__.__name__} object with "
-                f"{self.number_of_nodes} nodes and "
-                f"{self.number_of_edges} edges.")
+        return (
+            f"{self.__class__.__name__} object with "
+            f"{self.number_of_nodes} nodes and "
+            f"{self.number_of_edges} edges."
+        )
 
 
 class GraphArray(BaseGraphArray):
@@ -145,11 +146,9 @@ class GraphArray(BaseGraphArray):
         array (np.ndarray): An array that has values linked to nodes/edges.
 
     """
+
     def __init__(
-            self,
-            base_graph: BaseGraph,
-            init_val: any = 0,
-            is_array_2d: bool = False
+        self, base_graph: BaseGraph, init_val=0, is_array_2d: bool = False,
     ):
         """Set the initial value of array."""
         super(GraphArray, self).__init__(base_graph)
@@ -166,9 +165,9 @@ class GraphArray(BaseGraphArray):
                     self.array[index] = init_val[item]
             else:
                 raise TypeError(
-                    f'Invalid type of init_val ({type(init_val)}). '
-                    f'Init_val must be either '
-                    f'{type(self)}, scalar, dict or np.ndarray.'
+                    f"Invalid type of init_val ({type(init_val)}). "
+                    f"Init_val must be either "
+                    f"{type(self)}, scalar, dict or np.ndarray."
                 )
         self._is_2d = is_array_2d
         if is_array_2d:  # reshape the array to 2-dimension.
@@ -213,10 +212,10 @@ class GraphArray(BaseGraphArray):
         # todo: avoid using the assign_to argument.
         if assign_to == "node":
             for node, value in var_dict.items():
-                res_graph.nodes[node]['value'] = value
+                res_graph.nodes[node]["value"] = value
         elif assign_to == "edge":
             for edge, value in var_dict.items():
-                res_graph.edges[edge]['value'] = value
+                res_graph.edges[edge]["value"] = value
         else:
             raise ValueError("assign_to must be 'node' or 'edge'")
         return res_graph
@@ -239,9 +238,9 @@ class GraphArray(BaseGraphArray):
         else:
             #  same as res.array  = self.array {+, -, * etc.} other.array
             res_array = operation_func(other.array)
-        return type(self)(self.base_graph,
-                          init_val=res_array,
-                          is_array_2d=self.is_2d)
+        return type(self)(
+            self.base_graph, init_val=res_array, is_array_2d=self.is_2d
+        )
 
     def __getitem__(self, key):
         """Returns the array element linked to the 'key' node/edge.
@@ -285,20 +284,21 @@ class GraphArray(BaseGraphArray):
         return self._operation(other, self.array.__pow__)
 
     def __matmul__(self, other):
-        self._operation_error_check(other, (self.__class__, ))
+        self._operation_error_check(other, (self.__class__,))
         return self.array @ other.array
 
     def __repr__(self):
         var_dict = self.as_dict()
-        res = 'index\tvalue\n'
+        res = "index\tvalue\n"
         for index, value in var_dict.items():
-            res += f'{index}\t{value}\n'
+            res += f"{index}\t{value}\n"
         return res
 
 
 class NodeArray(GraphArray):
     """Object of variables defined on the nodes.
     """
+
     @property
     def index(self):
         """Correspondence between the array indices and the nodes/edges."""
@@ -307,12 +307,13 @@ class NodeArray(GraphArray):
     def as_nx_graph(self):
         """Return a nx.DiGraph with the array elements as its node attributes.
         """
-        return super(NodeArray, self).as_nx_graph(assign_to='node')
+        return super(NodeArray, self).as_nx_graph(assign_to="node")
 
 
 class EdgeArray(GraphArray):
     """Object of variables defined on the edges.
     """
+
     @property
     def index(self):
         """Correspondence between the array indices and the nodes/edges."""
@@ -321,13 +322,12 @@ class EdgeArray(GraphArray):
     def as_nx_graph(self):
         """Return a nx.DiGraph with the array elements as its edge attributes.
         """
-        return super(EdgeArray, self).as_nx_graph(assign_to='edge')
+        return super(EdgeArray, self).as_nx_graph(assign_to="edge")
 
 
 class BaseMatrix(BaseGraphArray):
     def __init__(
-            self,
-            base_graph: BaseGraph,
+        self, base_graph: BaseGraph,
     ):
         """Create incidence matrix."""
         super(BaseMatrix, self).__init__(base_graph)
@@ -348,11 +348,7 @@ class BaseMatrix(BaseGraphArray):
 class AdjacencyMatrix(BaseMatrix):
     """N x N matrix"""
 
-    def __init__(
-            self,
-            weight: EdgeArray,
-            sparse_format: str = 'csr'
-    ):
+    def __init__(self, weight: EdgeArray, sparse_format: str = "csr"):
         """Create a matrix
 
         Args:
@@ -362,20 +358,21 @@ class AdjacencyMatrix(BaseMatrix):
         self.matrix = nx.to_scipy_sparse_matrix(
             weight.as_nx_graph(),
             nodelist=self.ordered_nodes,
-            weight='value',
-            format=sparse_format
+            weight="value",
+            format=sparse_format,
         )
 
     def __matmul__(self, other):
         if not isinstance(other, NodeArray):
             raise TypeError(
-                f'Adjacency matrix can be multiplied only '
-                f'with NodeVar, not {type(other)}.'
+                f"Adjacency matrix can be multiplied only "
+                f"with NodeVar, not {type(other)}."
             )
 
         res_array = self.matrix @ other.array
-        return NodeArray(self.base_graph, init_val=res_array,
-                         is_array_2d=other.is_2d)
+        return NodeArray(
+            self.base_graph, init_val=res_array, is_array_2d=other.is_2d
+        )
 
 
 class IncidenceMatrix(BaseMatrix):
@@ -383,8 +380,7 @@ class IncidenceMatrix(BaseMatrix):
     """
 
     def __init__(
-            self,
-            base_graph: BaseGraph,
+        self, base_graph: BaseGraph,
     ):
         """Create incidence matrix."""
         super(IncidenceMatrix, self).__init__(base_graph)
@@ -392,7 +388,7 @@ class IncidenceMatrix(BaseMatrix):
             base_graph,
             nodelist=self.ordered_nodes,
             edgelist=self.ordered_edges,
-            oriented=True
+            oriented=True,
         )
 
     def __matmul__(self, other):
@@ -414,10 +410,12 @@ class IncidenceMatrix(BaseMatrix):
         if not isinstance(other, type_other):
             raise TypeError(
                 f'{"transposed "*self.is_transposed}incidence matrix can '
-                f'be multiplied only with {str(type_other)}, '
-                f'not {type(other)}.'
+                f"be multiplied only with {str(type_other)}, "
+                f"not {type(other)}."
             )
 
         res_array = self.matrix @ other.array
-        return type_result(self.base_graph, init_val=res_array,
-                           is_array_2d=other.is_2d)
+        return type_result(
+            self.base_graph, init_val=res_array, is_array_2d=other.is_2d
+        )
+
