@@ -32,14 +32,6 @@ class BaseGraph(nx.DiGraph):
         )
 
     @property
-    def ordered_nodes(self):
-        return tuple(self.node_to_index.keys())
-
-    @property
-    def ordered_edges(self):
-        return tuple(self.edge_to_index.keys())
-
-    @property
     def node_to_index(self):
         return self._node_to_index
 
@@ -67,12 +59,20 @@ class BaseGraphArray:
         return self._base_graph
 
     @property
-    def ordered_nodes(self):
-        return self.base_graph.ordered_nodes
+    def node_to_index(self):
+        return self.base_graph.node_to_index
 
     @property
-    def ordered_edges(self):
-        return self.base_graph.ordered_edges
+    def edge_to_index(self):
+        return self.base_graph.edge_to_index
+
+    @property
+    def nodes(self):
+        return tuple(self.node_to_index.keys())
+
+    @property
+    def edges(self):
+        return tuple(self.edge_to_index.keys())
 
     @property
     def number_of_nodes(self):
@@ -83,12 +83,8 @@ class BaseGraphArray:
         return self.base_graph.number_of_edges()
 
     @property
-    def nodes(self):
-        return self.base_graph.nodes
-
-    @property
-    def edges(self):
-        return self.base_graph.edges
+    def is_transposed(self):
+        return self._is_transposed
 
     def _operation_error_check(self, other, allowed_classes):
         """Error check prior to doing mathematical operations.
@@ -109,8 +105,8 @@ class BaseGraphArray:
             self.base_graph
         ):
             raise ValueError(
-                f"Cannot compute between variables "
-                f"associated with different graphs."
+                "Cannot compute between variables "
+                "associated with different graphs."
             )
 
     def __str__(self):
@@ -242,31 +238,22 @@ class GraphArray(BaseGraphArray):
             self.base_graph, init_val=res_array, is_array_2d=self.is_2d
         )
 
-    def __getitem__(self, key):
-        """Returns the array element linked to the 'key' node/edge.
-
-        This is called by self[key].
-        """
+    def _get_array_index(self, key):
         index = self.index[key]
         if self.is_2d:
             if self.is_transposed:
                 index = (0, index)
             else:
                 index = (index, 0)
-        return self.array[index]
+        return index
+
+    def __getitem__(self, key):
+        """Returns the array element linked to the 'key' node/edge."""
+        return self.array[self._get_array_index(key)]
 
     def __setitem__(self, key, value):
-        """Set a value to the array element linked to the 'key' node/edge.
-
-        This is called by self[key] = value.
-        """
-        index = self.index[key]
-        if self.is_2d:
-            if self.is_transposed:
-                index = (0, index)
-            else:
-                index = (index, 0)
-        self.array[index] = value
+        """Set a value to the array element linked to the 'key' node/edge."""
+        self.array[self._get_array_index(key)] = value
 
     def __add__(self, other):
         return self._operation(other, self.array.__add__)
@@ -296,8 +283,7 @@ class GraphArray(BaseGraphArray):
 
 
 class NodeArray(GraphArray):
-    """Object of variables defined on the nodes.
-    """
+    """Object of variables defined on the nodes."""
 
     @property
     def index(self):
@@ -311,8 +297,7 @@ class NodeArray(GraphArray):
 
 
 class EdgeArray(GraphArray):
-    """Object of variables defined on the edges.
-    """
+    """Object of variables defined on the edges."""
 
     @property
     def index(self):
@@ -357,7 +342,7 @@ class AdjacencyMatrix(BaseMatrix):
         super(AdjacencyMatrix, self).__init__(weight.base_graph)
         self.matrix = nx.to_scipy_sparse_matrix(
             weight.as_nx_graph(),
-            nodelist=self.ordered_nodes,
+            nodelist=self.nodes,
             weight="value",
             format=sparse_format,
         )
@@ -386,8 +371,8 @@ class IncidenceMatrix(BaseMatrix):
         super(IncidenceMatrix, self).__init__(base_graph)
         self.matrix = nx.incidence_matrix(
             base_graph,
-            nodelist=self.ordered_nodes,
-            edgelist=self.ordered_edges,
+            nodelist=self.nodes,
+            edgelist=self.edges,
             oriented=True,
         )
 

@@ -27,10 +27,8 @@ class GraphVarBaseTestCase(unittest.TestCase):
 
     def test_is_order_correct(self):
         gvar = BaseGraphArray(self.graph)
-        self.assertEqual(
-            gvar.ordered_edges, ((0, 2), (0, 4), (2, 4), (2, 6), (4, 6))
-        )
-        self.assertEqual(gvar.ordered_nodes, (0, 2, 4, 6))
+        self.assertEqual(gvar.edges, ((0, 2), (0, 4), (2, 4), (2, 6), (4, 6)))
+        self.assertEqual(gvar.nodes, (0, 2, 4, 6))
 
 
 class NodeArrayTestCase(unittest.TestCase):
@@ -72,7 +70,6 @@ class NodeArrayTestCase(unittest.TestCase):
         init_val = {n: weight[i] for i, n in enumerate(self.nodes)}
         gvar = NodeArray(self.graph, init_val=init_val)
         res_graph = gvar.as_nx_graph()
-        print(res_graph.nodes.data())
         for key in init_val:
             self.assertEqual(res_graph.nodes[key]["value"], init_val[key])
 
@@ -98,10 +95,10 @@ class NodeArrayTestCase(unittest.TestCase):
 
     def make_gvars_for_operation(self):
         gvar_1 = NodeArray(self.graph)
-        for i in self.graph.ordered_nodes:
+        for i in self.graph.nodes:
             gvar_1[i] = 10 * i
         gvar_2 = NodeArray(self.graph)
-        for i in self.graph.ordered_nodes:
+        for i in self.graph.nodes:
             gvar_2[i] = (8 - i) * 10
         return gvar_1, gvar_2
 
@@ -208,10 +205,10 @@ class EdgeArrayTestCase(unittest.TestCase):
 
     def make_gvars_for_operation(self):
         gvar_1 = EdgeArray(self.graph)
-        for i, edge in enumerate(self.graph.ordered_edges):
+        for i, edge in enumerate(self.graph.edges):
             gvar_1[edge] = 10 * i
         gvar_2 = EdgeArray(self.graph)
-        for i, edge in enumerate(self.graph.ordered_edges):
+        for i, edge in enumerate(self.graph.edges):
             gvar_2[edge] = (5 - i) * 10
         return gvar_1, gvar_2
 
@@ -318,14 +315,12 @@ class FunctionTestCase(unittest.TestCase):
         self.num_edges = 5
         self.node_weight = np.array([3 * i for i in range(self.num_nodes)])
         init_val = {
-            n: self.node_weight[i]
-            for i, n in enumerate(self.graph.ordered_nodes)
+            n: self.node_weight[i] for i, n in enumerate(self.graph.nodes)
         }
         self.node_var = NodeArray(self.graph, init_val=init_val)
         self.edge_weight = np.array([3 * i for i in range(self.num_edges)])
         init_val = {
-            e: self.edge_weight[i]
-            for i, e in enumerate(self.graph.ordered_edges)
+            e: self.edge_weight[i] for i, e in enumerate(self.graph.edges)
         }
         self.edge_var = EdgeArray(self.graph, init_val=init_val)
 
