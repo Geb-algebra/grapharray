@@ -1,4 +1,4 @@
-import unittest
+import pytest
 
 import networkx as nx
 import numpy as np
@@ -7,7 +7,6 @@ from grapharray.classes import (
     BaseGraphArray,
     NodeArray,
     EdgeArray,
-    MultiEdgeArray,
     AdjacencyMatrix,
     IncidenceMatrix,
 )
@@ -15,10 +14,10 @@ from grapharray.functions import exp
 
 
 def compare_array(a, b):
-    return a.shape == b.shape and np.all(abs(a - b) < 1e-10)
+    return np.all(abs(a - b) < 1e-10)
 
 
-class GraphVarBaseTestCase(unittest.TestCase):
+class TestGraphVarBase:
     def setUp(self) -> None:
         #  Tested by the Braess' network
         g = [(0, 2), (0, 4), (2, 4), (2, 6), (4, 6)]
@@ -28,10 +27,8 @@ class GraphVarBaseTestCase(unittest.TestCase):
 
     def test_is_order_correct(self):
         gvar = BaseGraphArray(self.graph)
-        self.assertEqual(
-            gvar.ordered_edges, ((0, 2), (0, 4), (2, 4), (2, 6), (4, 6))
-        )
-        self.assertEqual(gvar.ordered_nodes, (0, 2, 4, 6))
+        self.assertEqual(gvar.edges, ((0, 2), (0, 4), (2, 4), (2, 6), (4, 6)))
+        self.assertEqual(gvar.nodes, (0, 2, 4, 6))
 
 
 class NodeArrayTestCase(unittest.TestCase):
@@ -44,7 +41,7 @@ class NodeArrayTestCase(unittest.TestCase):
         self.num_edges = 5
 
     def test_is_scalar_init_val_set_correctly(self):
-        gvar = NodeArray(self.graph, init_val=3.1415, is_1d=True)
+        gvar = NodeArray(self.graph, init_val=3.1415)
         self.assertTrue(
             compare_array(gvar.array, np.ones(self.num_nodes) * 3.1415)
         )
@@ -52,12 +49,12 @@ class NodeArrayTestCase(unittest.TestCase):
     def test_is_dict_init_val_set_correctly(self):
         weight = np.array([3.1415 * i for i in range(self.num_nodes)])
         init_val = {n: weight[i] for i, n in enumerate(self.nodes)}
-        gvar = NodeArray(self.graph, init_val=init_val, is_1d=True)
+        gvar = NodeArray(self.graph, init_val=init_val)
 
         self.assertTrue(compare_array(gvar.array, weight))
 
     def test_is_vertical_array_available(self):
-        gvar = NodeArray(self.graph)
+        gvar = NodeArray(self.graph, is_array_2d=True)
         self.assertEqual(gvar.array.shape, (4, 1))
 
     def test_is_var_dict_correct(self):
@@ -73,35 +70,34 @@ class NodeArrayTestCase(unittest.TestCase):
         init_val = {n: weight[i] for i, n in enumerate(self.nodes)}
         gvar = NodeArray(self.graph, init_val=init_val)
         res_graph = gvar.as_nx_graph()
-        print(res_graph.nodes.data())
         for key in init_val:
             self.assertEqual(res_graph.nodes[key]["value"], init_val[key])
 
     def test_can_get_item_correctly(self):
         weight = np.array([3.1415 * i for i in range(self.num_nodes)])
         init_val = {n: weight[i] for i, n in enumerate(self.nodes)}
-        gvar = NodeArray(self.graph, init_val=init_val, is_1d=True)
+        gvar = NodeArray(self.graph, init_val=init_val)
         for n in init_val:
             self.assertEqual(gvar[n], init_val[n])
-        gvar = NodeArray(self.graph, init_val=init_val)
+        gvar = NodeArray(self.graph, init_val=init_val, is_array_2d=True)
         for n in init_val:
             self.assertEqual(gvar[n], init_val[n])
 
     def test_can_set_item_correctly(self):
-        gvar = NodeArray(self.graph, is_1d=True)
+        gvar = NodeArray(self.graph)
         gvar[2] = 5
         self.assertTrue(compare_array(gvar.array, np.array([0, 5, 0, 0])))
-        gvar = NodeArray(self.graph)
+        gvar = NodeArray(self.graph, is_array_2d=True)
         gvar[2] = 5
         self.assertTrue(
             compare_array(gvar.array, np.array([0, 5, 0, 0]).reshape((-1, 1)))
         )
 
     def make_gvars_for_operation(self):
-        gvar_1 = NodeArray(self.graph, is_1d=True)
+        gvar_1 = NodeArray(self.graph)
         for i in self.graph.nodes:
             gvar_1[i] = 10 * i
-        gvar_2 = NodeArray(self.graph, is_1d=True)
+        gvar_2 = NodeArray(self.graph)
         for i in self.graph.nodes:
             gvar_2[i] = (8 - i) * 10
         return gvar_1, gvar_2
@@ -139,11 +135,11 @@ class NodeArrayTestCase(unittest.TestCase):
         self.assertTrue(compare_array(truediv.array, np.array([0, 5, 10, 15])))
 
     def test_is_matmul_correct(self):
-        gvar_1 = NodeArray(self.graph, init_val=5, is_1d=True)
-        gvar_2 = NodeArray(self.graph, init_val=10, is_1d=True)
-        self.assertEqual(gvar_1 @ gvar_2, 200)
         gvar_1 = NodeArray(self.graph, init_val=5)
         gvar_2 = NodeArray(self.graph, init_val=10)
+        self.assertEqual(gvar_1 @ gvar_2, 200)
+        gvar_1 = NodeArray(self.graph, init_val=5, is_array_2d=True)
+        gvar_2 = NodeArray(self.graph, init_val=10, is_array_2d=True)
         self.assertEqual(gvar_1.T @ gvar_2, 200)
 
 
@@ -157,7 +153,7 @@ class EdgeArrayTestCase(unittest.TestCase):
         self.num_edges = 5
 
     def test_is_scalar_init_val_set_correctly(self):
-        gvar = EdgeArray(self.graph, init_val=3.1415, is_1d=True)
+        gvar = EdgeArray(self.graph, init_val=3.1415)
         self.assertTrue(
             compare_array(gvar.array, np.ones(self.num_edges) * 3.1415)
         )
@@ -165,14 +161,14 @@ class EdgeArrayTestCase(unittest.TestCase):
     def test_is_dict_init_val_set_correctly(self):
         weight = np.array([3.1415 * i for i in range(self.num_edges)])
         init_val = {e: weight[i] for i, e in enumerate(self.edges)}
-        gvar = EdgeArray(self.graph, init_val=init_val, is_1d=True)
+        gvar = EdgeArray(self.graph, init_val=init_val)
 
         self.assertTrue(compare_array(gvar.array, weight))
 
     def test_is_as_dict_correct(self):
         weight = np.array([3.1415 * i for i in range(self.num_edges)])
         init_val = {e: weight[i] for i, e in enumerate(self.edges)}
-        gvar = EdgeArray(self.graph, init_val=init_val, is_1d=True)
+        gvar = EdgeArray(self.graph, init_val=init_val)
         var_dict = gvar.as_dict()
         for key in init_val:
             self.assertEqual(var_dict[key], init_val[key])
@@ -180,7 +176,7 @@ class EdgeArrayTestCase(unittest.TestCase):
     def test_is_values_correctly_gotten_as_graph(self):
         weight = np.array([3.1415 * i for i in range(self.num_edges)])
         init_val = {e: weight[i] for i, e in enumerate(self.edges)}
-        gvar = EdgeArray(self.graph, init_val=init_val, is_1d=True)
+        gvar = EdgeArray(self.graph, init_val=init_val)
         res_graph = gvar.as_nx_graph()
         for key in init_val:
             self.assertEqual(res_graph.edges[key]["value"], init_val[key])
@@ -188,18 +184,18 @@ class EdgeArrayTestCase(unittest.TestCase):
     def test_can_get_item_correctly(self):
         weight = np.array([3.1415 * i for i in range(self.num_edges)])
         init_val = {e: weight[i] for i, e in enumerate(self.edges)}
-        gvar = EdgeArray(self.graph, init_val=init_val, is_1d=True)
+        gvar = EdgeArray(self.graph, init_val=init_val)
         for n in init_val:
             self.assertEqual(gvar[n], init_val[n])
-        gvar = EdgeArray(self.graph, init_val=init_val)
+        gvar = EdgeArray(self.graph, init_val=init_val, is_array_2d=True)
         for n in init_val:
             self.assertEqual(gvar[n], init_val[n])
 
     def test_can_set_item_correctly(self):
-        gvar = EdgeArray(self.graph, is_1d=True)
+        gvar = EdgeArray(self.graph)
         gvar[0, 4] = 5
         self.assertTrue(compare_array(gvar.array, np.array([0, 5, 0, 0, 0])))
-        gvar = EdgeArray(self.graph)
+        gvar = EdgeArray(self.graph, is_array_2d=True)
         gvar[0, 4] = 5
         self.assertTrue(
             compare_array(
@@ -208,10 +204,10 @@ class EdgeArrayTestCase(unittest.TestCase):
         )
 
     def make_gvars_for_operation(self):
-        gvar_1 = EdgeArray(self.graph, is_1d=True)
+        gvar_1 = EdgeArray(self.graph)
         for i, edge in enumerate(self.graph.edges):
             gvar_1[edge] = 10 * i
-        gvar_2 = EdgeArray(self.graph, is_1d=True)
+        gvar_2 = EdgeArray(self.graph)
         for i, edge in enumerate(self.graph.edges):
             gvar_2[edge] = (5 - i) * 10
         return gvar_1, gvar_2
@@ -257,41 +253,6 @@ class EdgeArrayTestCase(unittest.TestCase):
         truediv = a / 4
         self.assertTrue(
             compare_array(truediv.array, np.array([0, 2.5, 5, 7.5, 10]))
-        )
-
-
-class MultiEdgeArrayTestCase(unittest.TestCase):
-    def setUp(self):
-        #  Tested by the Braess' network
-        self.edges = [(0, 2), (0, 4), (2, 4), (2, 6), (4, 6)]
-        self.nodes = [0, 2, 4, 6, 8]
-        self.graph = BaseGraph(nx.DiGraph(self.edges))
-        self.num_nodes = 4
-        self.num_edges = 5
-        init = {}
-        for i, e in enumerate(self.edges):
-            init[e] = {}
-            for o in [0, 8]:
-                init[e][o] = 5 * i * (o + 1)
-        self.mea = MultiEdgeArray(self.graph, init_val=init, sub_items=[0, 8])
-
-    def test_is_array_correct(self):
-        self.assertTrue(
-            compare_array(
-                self.mea.array,
-                np.array([[0, 0], [5, 45], [10, 90], [15, 135], [20, 180]]),
-            )
-        )
-
-    def test_is_indexing_correct(self):
-        self.assertEqual(self.mea[(2, 6), 8], 135)
-
-    def test_is_sum_correct(self):
-        self.assertTrue(
-            compare_array(
-                self.mea.sum(as_1d=True).array,
-                np.array([0, 50, 100, 150, 200]),
-            )
         )
 
 
@@ -354,16 +315,14 @@ class FunctionTestCase(unittest.TestCase):
         self.num_edges = 5
         self.node_weight = np.array([3 * i for i in range(self.num_nodes)])
         init_val = {
-            n: self.node_weight[i]
-            for i, n in enumerate(self.graph.ordered_nodes)
+            n: self.node_weight[i] for i, n in enumerate(self.graph.nodes)
         }
-        self.node_var = NodeArray(self.graph, init_val=init_val, is_1d=True)
+        self.node_var = NodeArray(self.graph, init_val=init_val)
         self.edge_weight = np.array([3 * i for i in range(self.num_edges)])
         init_val = {
-            e: self.edge_weight[i]
-            for i, e in enumerate(self.graph.ordered_edges)
+            e: self.edge_weight[i] for i, e in enumerate(self.graph.edges)
         }
-        self.edge_var = EdgeArray(self.graph, init_val=init_val, is_1d=True)
+        self.edge_var = EdgeArray(self.graph, init_val=init_val)
 
     def test_exp(self):
         self.assertTrue(
