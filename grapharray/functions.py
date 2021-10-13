@@ -23,9 +23,13 @@ def apply_array_function(var: Union[NodeArray, EdgeArray], function: Callable):
     """
     res_array = function(var.array)
     if isinstance(var, NodeArray):
-        return NodeArray(var.base_graph, init_val=res_array, is_1d=var.is_1d)
+        return NodeArray(
+            var.base_graph, init_val=res_array, is_array_2d=var.is_2d
+        )
     elif isinstance(var, EdgeArray):
-        return EdgeArray(var.base_graph, init_val=res_array, is_1d=var.is_1d)
+        return EdgeArray(
+            var.base_graph, init_val=res_array, is_array_2d=var.is_2d
+        )
     else:
         raise TypeError(
             f"Invalid type of argument {type(var)}. "
