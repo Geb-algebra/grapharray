@@ -151,7 +151,7 @@ class GraphArray(BaseGraphArray):
         if isinstance(init_val, np.ndarray):
             self.array = init_val
         elif isinstance(init_val, self.__class__):
-            self.array = init_val.array
+            self.array = init_val.array.copy()
         else:
             self.array = np.ones(len(self.index))
             if isinstance(init_val, (int, float)):
