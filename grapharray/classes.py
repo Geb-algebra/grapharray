@@ -149,16 +149,16 @@ class GraphArray(BaseGraphArray):
         """Set the initial value of array."""
         super(GraphArray, self).__init__(base_graph)
         if isinstance(init_val, np.ndarray):
-            self.array = init_val
+            self._array = init_val
         elif isinstance(init_val, self.__class__):
-            self.array = init_val.array.copy()
+            self._array = init_val.array
         else:
-            self.array = np.ones(len(self.index))
+            self._array = np.ones(len(self.index))
             if isinstance(init_val, (int, float)):
-                self.array *= init_val
+                self._array *= init_val
             elif isinstance(init_val, dict):
                 for item, index in self.index.items():
-                    self.array[index] = init_val[item]
+                    self._array[index] = init_val[item]
             else:
                 raise TypeError(
                     f"Invalid type of init_val ({type(init_val)}). "
@@ -167,7 +167,11 @@ class GraphArray(BaseGraphArray):
                 )
         self._is_2d = is_array_2d
         if is_array_2d:  # reshape the array to 2-dimension.
-            self.array = self.array.reshape((-1, 1))
+            self._array = self._array.reshape((-1, 1))
+
+    @property
+    def array(self):
+        return self._array
 
     @property
     def is_2d(self):
@@ -182,7 +186,7 @@ class GraphArray(BaseGraphArray):
     @property
     def T(self):
         """Transpose the array."""
-        self.array = self.array.T
+        self._array = self._array.T
         self._is_transposed = not self._is_transposed
         return self
 
@@ -197,7 +201,9 @@ class GraphArray(BaseGraphArray):
     def as_dict(self) -> dict:
         """Return values of variables as a dictionary keyed by node/edge.
         """
-        value = {item: self.array[index] for item, index in self.index.items()}
+        value = {
+            item: self._array[index] for item, index in self.index.items()
+        }
         return value
 
     def as_nx_graph(self, assign_to=None):
@@ -249,30 +255,30 @@ class GraphArray(BaseGraphArray):
 
     def __getitem__(self, key):
         """Returns the array element linked to the 'key' node/edge."""
-        return self.array[self._get_array_index(key)]
+        return self._array[self._get_array_index(key)]
 
     def __setitem__(self, key, value):
         """Set a value to the array element linked to the 'key' node/edge."""
-        self.array[self._get_array_index(key)] = value
+        self._array[self._get_array_index(key)] = value
 
     def __add__(self, other):
-        return self._operation(other, self.array.__add__)
+        return self._operation(other, self._array.__add__)
 
     def __sub__(self, other):
-        return self._operation(other, self.array.__sub__)
+        return self._operation(other, self._array.__sub__)
 
     def __mul__(self, other):
-        return self._operation(other, self.array.__mul__)
+        return self._operation(other, self._array.__mul__)
 
     def __truediv__(self, other):
-        return self._operation(other, self.array.__truediv__)
+        return self._operation(other, self._array.__truediv__)
 
     def __pow__(self, other):
-        return self._operation(other, self.array.__pow__)
+        return self._operation(other, self._array.__pow__)
 
     def __matmul__(self, other):
         self._operation_error_check(other, (self.__class__,))
-        return self.array @ other.array
+        return self._array @ other.array
 
     def __repr__(self):
         var_dict = self.as_dict()
