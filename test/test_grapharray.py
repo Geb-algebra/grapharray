@@ -1,10 +1,9 @@
 import pytest
-import unittest
 
 import networkx as nx
 import numpy as np
 from grapharray.classes import (
-    BaseGraph,
+    BaseGraph
     BaseGraphArray,
     NodeArray,
     EdgeArray,
@@ -14,21 +13,12 @@ from grapharray.classes import (
 from grapharray.functions import exp
 
 
-def assert_is_array_equal(a, b):
-    if a.shape != b.shape:
-        pytest.fail(f"Shapes does not match: {a.shape} vs {b.shape}")
-    elif np.any(abs(a - b) >= 1e-10):
-        failed_index = list(zip(*np.where(abs(a - b) >= 1e-10)))
-        message = f"Elements {failed_index} does not equal.\n"
-        for i in failed_index:
-            message += f" {i}: {a[i]} vs {b[i]}\n"
-        pytest.fail(message)
-
-
 @pytest.fixture
 def graph():
     g = [(0, 2), (0, 4), (2, 4), (2, 6), (4, 6)]
-    return BaseGraph(nx.DiGraph(g))
+    bg = BaseGraph(g)
+    bg.freeze()
+    return bg
 
 
 @pytest.fixture(params=[NodeArray, EdgeArray])
@@ -47,6 +37,17 @@ def node_edge_index(graph, NodeEdgeArray):
 @pytest.fixture
 def dict_init_val(node_edge_index):
     return {n: 3.1415 * i for i, n in enumerate(node_edge_index)}
+
+
+def assert_is_array_equal(a, b):
+    if a.shape != b.shape:
+        pytest.fail(f"Shapes does not match: {a.shape} vs {b.shape}")
+    elif np.any(abs(a - b) >= 1e-10):
+        failed_index = list(zip(*np.where(abs(a - b) >= 1e-10)))
+        message = f"Elements {failed_index} does not equal.\n"
+        for i in failed_index:
+            message += f" {i}: {a[i]} vs {b[i]}\n"
+        pytest.fail(message)
 
 
 def test_is_nodes_edges_sorted(graph):
