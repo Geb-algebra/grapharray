@@ -1,7 +1,7 @@
-﻿netarray.classes.BaseGraph
-==========================
+﻿grapharray.classes.BaseGraph
+============================
 
-.. currentmodule:: netarray.classes
+.. currentmodule:: grapharray.classes
 
 .. autoclass:: BaseGraph
 
@@ -24,6 +24,7 @@
       ~BaseGraph.clear_edges
       ~BaseGraph.copy
       ~BaseGraph.edge_subgraph
+      ~BaseGraph.freeze
       ~BaseGraph.get_edge_data
       ~BaseGraph.has_edge
       ~BaseGraph.has_node
@@ -68,8 +69,6 @@
       ~BaseGraph.name
       ~BaseGraph.node_to_index
       ~BaseGraph.nodes
-      ~BaseGraph.ordered_edges
-      ~BaseGraph.ordered_nodes
       ~BaseGraph.out_degree
       ~BaseGraph.out_edges
       ~BaseGraph.pred

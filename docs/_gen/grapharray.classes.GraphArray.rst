@@ -1,7 +1,7 @@
-﻿netarray.classes.GraphArray
-===========================
+﻿grapharray.classes.GraphArray
+=============================
 
-.. currentmodule:: netarray.classes
+.. currentmodule:: grapharray.classes
 
 .. autoclass:: GraphArray
 
@@ -26,15 +26,15 @@
    .. autosummary::
    
       ~GraphArray.T
+      ~GraphArray.array
       ~GraphArray.base_graph
+      ~GraphArray.edge_to_index
       ~GraphArray.edges
       ~GraphArray.index
-      ~GraphArray.is_2d
       ~GraphArray.is_transposed
+      ~GraphArray.node_to_index
       ~GraphArray.nodes
       ~GraphArray.number_of_edges
       ~GraphArray.number_of_nodes
-      ~GraphArray.ordered_edges
-      ~GraphArray.ordered_nodes
    
    

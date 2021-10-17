@@ -1,7 +1,7 @@
-﻿netarray.classes.AdjacencyMatrix
-================================
+﻿grapharray.classes.AdjacencyMatrix
+==================================
 
-.. currentmodule:: netarray.classes
+.. currentmodule:: grapharray.classes
 
 .. autoclass:: AdjacencyMatrix
 
@@ -24,13 +24,14 @@
    .. autosummary::
    
       ~AdjacencyMatrix.T
+      ~AdjacencyMatrix.array
       ~AdjacencyMatrix.base_graph
+      ~AdjacencyMatrix.edge_to_index
       ~AdjacencyMatrix.edges
       ~AdjacencyMatrix.is_transposed
+      ~AdjacencyMatrix.node_to_index
       ~AdjacencyMatrix.nodes
       ~AdjacencyMatrix.number_of_edges
       ~AdjacencyMatrix.number_of_nodes
-      ~AdjacencyMatrix.ordered_edges
-      ~AdjacencyMatrix.ordered_nodes
    
    

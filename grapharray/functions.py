@@ -50,17 +50,3 @@ def log(var: Union[NodeArray, EdgeArray]):
 def sum(var: Union[NodeArray, EdgeArray]):
     """Sum up all variables"""
     return np.sum(var.array)
-
-
-def read_json(
-    f: _io.TextIOWrapper, base_graph: BaseGraph, data_type: str,
-):
-    json_data = json.load(f)
-    if data_type == "node":
-        return NodeArray(base_graph, init_val=json_data)
-    elif data_type == "edge":
-        return EdgeArray(base_graph, init_val=json_data)
-    else:
-        raise ValueError(
-            f"data_type must be either node or edge, not {data_type}"
-        )

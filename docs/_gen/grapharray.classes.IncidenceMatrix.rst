@@ -1,7 +1,7 @@
-﻿netarray.classes.IncidenceMatrix
-================================
+﻿grapharray.classes.IncidenceMatrix
+==================================
 
-.. currentmodule:: netarray.classes
+.. currentmodule:: grapharray.classes
 
 .. autoclass:: IncidenceMatrix
 
@@ -24,13 +24,14 @@
    .. autosummary::
    
       ~IncidenceMatrix.T
+      ~IncidenceMatrix.array
       ~IncidenceMatrix.base_graph
+      ~IncidenceMatrix.edge_to_index
       ~IncidenceMatrix.edges
       ~IncidenceMatrix.is_transposed
+      ~IncidenceMatrix.node_to_index
       ~IncidenceMatrix.nodes
       ~IncidenceMatrix.number_of_edges
       ~IncidenceMatrix.number_of_nodes
-      ~IncidenceMatrix.ordered_edges
-      ~IncidenceMatrix.ordered_nodes
    
    

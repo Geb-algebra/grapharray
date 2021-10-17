@@ -4,5 +4,6 @@
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "jupyter.jupyterServerType": "local"
+    "jupyter.jupyterServerType": "local",
+    "restructuredtext.confPath": "${workspaceFolder}/docs"
 }

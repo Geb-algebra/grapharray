@@ -18,13 +18,20 @@ class BaseGraph(nx.DiGraph):
 
     @property
     def node_to_index(self):
+        """Correspondence between nodes and array indices"""
         return self._node_to_index
 
     @property
     def edge_to_index(self):
+        """Correspondence between edges and array indices"""
         return self._edge_to_index
 
     def freeze(self):
+        """Freeze the graph and map between nodes / edges and array indices
+
+            This method must be called before the instance is passed to 
+            array initialization methods.
+        """
         nx.freeze(self)
         self._node_to_index = MappingProxyType(
             {node: i for i, node in enumerate(self.nodes)}
@@ -52,50 +59,58 @@ class BaseGraphArray:
             )
         elif not nx.is_frozen(base_graph):
             raise ValueError("base_graph is not freezed.")
-        self._base_graph = base_graph
-        self._is_transposed = False
+        self._base_graph: BaseGraph = base_graph
+        self._is_transposed: bool = False
         self._array: np.ndarray = None  # Dummy implementation
 
     @property
     def array(self):
+        """Core array"""
         return self._array
 
     @property
     def base_graph(self):
+        """BaseGraph object on that this array itself is defined"""
         return self._base_graph
 
     @property
     def node_to_index(self):
+        """Correspondence between nodes and array indices"""
         return self.base_graph.node_to_index
 
     @property
     def edge_to_index(self):
+        """Correspondence between edges and array indices"""
         return self.base_graph.edge_to_index
 
     @property
     def nodes(self):
+        """Tuple of all nodes"""
         return tuple(self.node_to_index.keys())
 
     @property
     def edges(self):
+        """Tuple of all edges"""
         return tuple(self.edge_to_index.keys())
 
     @property
     def number_of_nodes(self):
+        """The number of nodes in the base graph"""
         return self.base_graph.number_of_nodes()
 
     @property
     def number_of_edges(self):
+        """The number of edges in the base graph"""
         return self.base_graph.number_of_edges()
 
     @property
     def is_transposed(self):
-        """Whether the array is transposed (i.e., 2-d row vector) or not."""
+        """Whether the array is transposed or not."""
         return self._is_transposed
 
     @property
     def T(self):
-        """Transpose the array."""
+        """Transpose the array"""
         self._array = self._array.transpose()
         self._is_transposed = not self._is_transposed
         return self
@@ -107,8 +122,11 @@ class BaseGraphArray:
             other: opponents of the operation.
             allowed_classes: tuple of classes that other allowed to be.
 
-        Returns:
-
+        Raises:
+            TypeError: when the class of the opponent is not the same as 
+                the class of self
+            ValueError: when both of self and the opponent are BaseGraphArray
+                but they are defined on different base graphs.
         """
         if not isinstance(other, allowed_classes):
             raise TypeError(
@@ -125,6 +143,7 @@ class BaseGraphArray:
             )
 
     def __str__(self):
+        """Return a string for print function"""
         return (
             f"{self.__class__.__name__} object with "
             f"{self.number_of_nodes} nodes and "
@@ -185,15 +204,6 @@ class GraphArray(BaseGraphArray):
             self._array = self._array.reshape((-1, 1))
 
     @property
-    def array(self):
-        return self._array
-
-    @property
-    def is_2d(self):
-        """Whether the array is 2-dimensional or not."""
-        return self._is_2d
-
-    @property
     def index(self):
         """Correspondence between the array indices and the nodes/edges.
 
@@ -248,21 +258,27 @@ class GraphArray(BaseGraphArray):
         )
 
     def __add__(self, other):
+        """Element-wise addition"""
         return self._operation(other, self._array.__add__)
 
     def __sub__(self, other):
+        """Element-wise subtraction"""
         return self._operation(other, self._array.__sub__)
 
     def __mul__(self, other):
+        """Element-wise multiplication"""
         return self._operation(other, self._array.__mul__)
 
     def __truediv__(self, other):
+        """Element-wise division"""
         return self._operation(other, self._array.__truediv__)
 
     def __pow__(self, other):
+        """Element-wise exponentiation"""
         return self._operation(other, self._array.__pow__)
 
     def __matmul__(self, other):
+        """Inner product of two arrays"""
         self._operation_error_check(other, (self.__class__,))
         return self._array @ other.array
 
@@ -272,6 +288,7 @@ class GraphArray(BaseGraphArray):
         return np.all(self._array == other._array)
 
     def _get_array_index(self, key):
+        """Get the array index corresponding to the specified node or edge"""
         index = self.index[key]
         if self.is_2d:
             if self.is_transposed:
@@ -281,19 +298,24 @@ class GraphArray(BaseGraphArray):
         return index
 
     def __getitem__(self, key):
-        """Returns the array element linked to the 'key' node/edge."""
+        """Get the array element corresponding to the specified node or edge"""
         return self._array[self._get_array_index(key)]
 
     def __setitem__(self, key, value):
-        """Set a value to the array element linked to the 'key' node/edge."""
+        """Set value to the array corresponding to the specified node or edge"""
         self._array[self._get_array_index(key)] = value
 
     def __repr__(self):
+        """Return a string representation of the array"""
         var_dict = self.as_dict()
         res = "index\tvalue\n"
         for index, value in var_dict.items():
             res += f"{index}\t{value}\n"
         return res
+
+    def __len__(self):
+        """Return the length of array"""
+        return len(self._array)
 
 
 class NodeArray(GraphArray):
@@ -301,7 +323,7 @@ class NodeArray(GraphArray):
 
     @property
     def index(self):
-        """Correspondence between the array indices and the nodes/edges."""
+        """Correspondence between the array indices and the nodes."""
         return self.base_graph.node_to_index
 
     def as_nx_graph(self):
@@ -315,7 +337,7 @@ class EdgeArray(GraphArray):
 
     @property
     def index(self):
-        """Correspondence between the array indices and the nodes/edges."""
+        """Correspondence between the array indices and the edges."""
         return self.base_graph.edge_to_index
 
     def as_nx_graph(self):
@@ -331,7 +353,12 @@ class AdjacencyMatrix(BaseGraphArray):
         """Create a matrix
 
         Args:
-
+            weight: the element values of the matrix. The value of 
+                weight[init, term] is set to the (init, term) element of the 
+                matrix.
+            sparse_format: str in {‘bsr’, ‘csr’, ‘csc’, ‘coo’, ‘lil’, ‘dia’, 
+            ‘dok’}
+            the format of the sparse matrix.
         """
         super(AdjacencyMatrix, self).__init__(weight.base_graph)
         self._array = nx.to_scipy_sparse_matrix(
@@ -342,10 +369,14 @@ class AdjacencyMatrix(BaseGraphArray):
         )
 
     def __matmul__(self, other):
+        """Return the vector-matrix product as an NodeArray object
+        
+        The opponent of the operation must be Nodearray object.
+        """
         if not isinstance(other, NodeArray):
             raise TypeError(
                 f"Adjacency matrix can be multiplied only "
-                f"with NodeVar, not {type(other)}."
+                f"with NodeArray, not {type(other)}."
             )
 
         res_array = self._array @ other.array
@@ -355,8 +386,7 @@ class AdjacencyMatrix(BaseGraphArray):
 
 
 class IncidenceMatrix(BaseGraphArray):
-    """Node-edge incidence matrix that can multiplied with NodeVar and EdgeVar.
-    """
+    """Node-edge incidence matrix"""
 
     def __init__(
         self, base_graph: BaseGraph,
@@ -371,7 +401,12 @@ class IncidenceMatrix(BaseGraphArray):
         )
 
     def __matmul__(self, other):
-        """Return the result of self multiplied by NodeVar or EdgeVar.
+        """Return the vector-matrix product.
+        
+        If the matrix is not transposed, the opponent of the operation 
+        must be an EdgeArray object and the result is a Nodearray object.
+        Otherwise the opponent must be an NodeArray object and the result 
+        is EdgeArray.
 
         Args:
             other: EdgeVar if not transposed, otherwise NodeVar.

@@ -1,7 +1,7 @@
-netarray.classes module
-=======================
+grapharray.classes module
+=========================
 
-.. automodule:: netarray.classes
+.. automodule:: grapharray.classes
    :members:
    :undoc-members:
    :show-inheritance:
@@ -14,6 +14,5 @@ netarray.classes module
       GraphArray
       NodeArray
       EdgeArray
-      BaseMatrix
       AdjacencyMatrix
       IncidenceMatrix

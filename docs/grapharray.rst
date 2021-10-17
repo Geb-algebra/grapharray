@@ -1,5 +1,5 @@
-netarray package
-================
+grapharray package
+==================
 
 Submodules
 ----------
@@ -7,13 +7,13 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   netarray.classes
-   netarray.functions
+   grapharray.classes
+   grapharray.functions
 
 Module contents
 ---------------
 
-.. automodule:: netarray
+.. automodule:: grapharray
    :members:
    :undoc-members:
    :show-inheritance:
