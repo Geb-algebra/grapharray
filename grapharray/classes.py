@@ -19,8 +19,8 @@ class BaseGraph(nx.DiGraph):
     def __init__(self, graph=None):
         """Run DiGraph.__init__ and setup attributes for defining variables."""
         super(BaseGraph, self).__init__(graph)
-        self._node_to_index = self._set_node_to_index()
-        self._edge_to_index = self._set_edge_to_index()
+        self._set_node_to_index()
+        self._set_edge_to_index()
 
     @property
     def node_to_index(self):
@@ -73,6 +73,13 @@ class BaseGraphArray:
         self, base_graph: BaseGraph,
     ):
         """Store BaseGraph instance on that the variable is defined."""
+        if not isinstance(base_graph, BaseGraph):
+            raise TypeError(
+                f"BaseGraph must be an instance of BaseGraph, "
+                f"not {type(base_graph)}."
+            )
+        elif not nx.is_frozen(base_graph):
+            raise ValueError("base_graph is not freezed.")
         self._base_graph = base_graph
         self._is_transposed = False
 
@@ -123,8 +130,9 @@ class BaseGraphArray:
                 f"{type(self)} can be operated only with "
                 f"{allowed_classes}, not {type(other)}."
             )
-        elif isinstance(other, BaseGraphArray) and id(other.base_graph) != id(
-            self.base_graph
+        elif (
+            isinstance(other, BaseGraphArray)
+            and other.base_graph is not self.base_graph
         ):
             raise ValueError(
                 "Cannot compute between variables "
@@ -175,9 +183,9 @@ class GraphArray(BaseGraphArray):
         elif isinstance(init_val, self.__class__):
             self._array = init_val.array
         else:
-            self._array = np.ones(len(self.index))
+            self._array = np.zeros(len(self.index))
             if isinstance(init_val, (int, float)):
-                self._array *= init_val
+                self._array += init_val
             elif isinstance(init_val, dict):
                 for item, index in self.index.items():
                     self._array[index] = init_val[item]
@@ -266,23 +274,6 @@ class GraphArray(BaseGraphArray):
             self.base_graph, init_val=res_array, is_array_2d=self.is_2d
         )
 
-    def _get_array_index(self, key):
-        index = self.index[key]
-        if self.is_2d:
-            if self.is_transposed:
-                index = (0, index)
-            else:
-                index = (index, 0)
-        return index
-
-    def __getitem__(self, key):
-        """Returns the array element linked to the 'key' node/edge."""
-        return self._array[self._get_array_index(key)]
-
-    def __setitem__(self, key, value):
-        """Set a value to the array element linked to the 'key' node/edge."""
-        self._array[self._get_array_index(key)] = value
-
     def __add__(self, other):
         return self._operation(other, self._array.__add__)
 
@@ -301,6 +292,35 @@ class GraphArray(BaseGraphArray):
     def __matmul__(self, other):
         self._operation_error_check(other, (self.__class__,))
         return self._array @ other.array
+
+    def __eq__(self, other):
+        """Compare array element-wise.
+        
+        Returns:
+            (NodeArray, EdgeArray): The result (an array ob boolean)
+                of element-wise comparison
+        """
+        self._operation_error_check(other, (self.__class__,))
+        return type(self)(
+            self.base_graph, init_val=(self._array == other._array)
+        )
+
+    def _get_array_index(self, key):
+        index = self.index[key]
+        if self.is_2d:
+            if self.is_transposed:
+                index = (0, index)
+            else:
+                index = (index, 0)
+        return index
+
+    def __getitem__(self, key):
+        """Returns the array element linked to the 'key' node/edge."""
+        return self._array[self._get_array_index(key)]
+
+    def __setitem__(self, key, value):
+        """Set a value to the array element linked to the 'key' node/edge."""
+        self._array[self._get_array_index(key)] = value
 
     def __repr__(self):
         var_dict = self.as_dict()

@@ -1,9 +1,10 @@
+from typing import Union
 import pytest
 
 import networkx as nx
 import numpy as np
 from grapharray.classes import (
-    BaseGraph
+    BaseGraph,
     BaseGraphArray,
     NodeArray,
     EdgeArray,
@@ -11,6 +12,17 @@ from grapharray.classes import (
     IncidenceMatrix,
 )
 from grapharray.functions import exp
+
+
+def assert_is_array_equal(a, b):
+    if a.shape != b.shape:
+        pytest.fail(f"Shapes does not match: {a.shape} vs {b.shape}")
+    elif np.any(abs(a - b) >= 1e-10):
+        failed_index = list(zip(*np.where(abs(a - b) >= 1e-10)))
+        message = f"Elements {failed_index} does not equal.\n"
+        for i in failed_index:
+            message += f" {i}: {a[i]} vs {b[i]}\n"
+        pytest.fail(message)
 
 
 @pytest.fixture
@@ -39,81 +51,78 @@ def dict_init_val(node_edge_index):
     return {n: 3.1415 * i for i, n in enumerate(node_edge_index)}
 
 
-def assert_is_array_equal(a, b):
-    if a.shape != b.shape:
-        pytest.fail(f"Shapes does not match: {a.shape} vs {b.shape}")
-    elif np.any(abs(a - b) >= 1e-10):
-        failed_index = list(zip(*np.where(abs(a - b) >= 1e-10)))
-        message = f"Elements {failed_index} does not equal.\n"
-        for i in failed_index:
-            message += f" {i}: {a[i]} vs {b[i]}\n"
-        pytest.fail(message)
+def test_is_invalid_type_base_graph_denied():
+    with pytest.raises(TypeError):
+        BaseGraphArray(1)
+    with pytest.raises(TypeError):
+        BaseGraphArray(nx.DiGraph())
 
 
-def test_is_nodes_edges_sorted(graph):
-    gvar = BaseGraphArray(graph)
-    assert gvar.nodes == (0, 2, 4, 6)
-    assert gvar.edges == ((0, 2), (0, 4), (2, 4), (2, 6), (4, 6))
+def test_can_set_item(graph, NodeEdgeArray, dict_init_val):
+    index = 4 if (NodeEdgeArray == NodeArray) else (2, 4)
+    array = np.zeros(len(dict_init_val))
+    array[2] = 5
+
+    tested = NodeEdgeArray(graph)
+    tested[index] = 5
+    assert np.all(tested.array == array)
+    tested = NodeEdgeArray(graph, is_array_2d=True)
+    tested[index] = 5
+    assert np.all(tested.array == array.reshape((-1, 1)))
+
+
+@pytest.mark.parametrize("is_2d", [False, True])
+def test_can_get_item(graph, NodeEdgeArray, dict_init_val, is_2d):
+    tested = NodeEdgeArray(graph, is_array_2d=is_2d)
+    for i, v in dict_init_val.items():
+        tested[i] = v
+    for k in dict_init_val:
+        assert tested[k] == dict_init_val[k]
 
 
 def test_can_init_val_set_with_scalar(graph, NodeEdgeArray):
-    gvar = NodeEdgeArray(graph, init_val=3.1415)
-    assert_is_array_equal(gvar.array, np.ones(len(gvar.index)) * 3.1415)
+    init_val = 3.1415
+    tested = NodeEdgeArray(graph, init_val=init_val)
+    correct = NodeEdgeArray(graph)
+    for i in correct.index:
+        correct[i] = init_val
+    assert tested == correct
 
 
 def test_can_init_val_set_with_dict(graph, NodeEdgeArray, dict_init_val):
-    gvar = NodeEdgeArray(graph, init_val=dict_init_val)
-    assert_is_array_equal(gvar.array, np.array(list(dict_init_val.values())))
+    tested = NodeEdgeArray(graph, init_val=dict_init_val)
+    correct = NodeEdgeArray(graph)
+    for i in correct.index:
+        correct[i] = dict_init_val[i]
+    assert tested == correct
 
 
 def test_can_init_val_set_with_self(graph, NodeEdgeArray):
     original = NodeEdgeArray(graph, init_val=3.1415)
-    new = NodeEdgeArray(graph, init_val=original)
-    assert_is_array_equal(new.array, original.array)
+    tested = NodeEdgeArray(graph, init_val=original)
+    assert tested == original
 
 
 def test_can_array_set_vertical(graph, NodeEdgeArray):
-    gvar = NodeEdgeArray(graph, is_array_2d=True)
-    assert gvar.array.shape == (len(gvar.index), 1)
+    tested = NodeEdgeArray(graph, is_array_2d=True)
+    assert tested.array.shape == (len(tested.index), 1)
 
 
 def test_can_get_values_as_dict(graph, NodeEdgeArray, dict_init_val):
-    gvar = NodeEdgeArray(graph, init_val=dict_init_val)
-    var_dict = gvar.as_dict()
+    tested = NodeEdgeArray(graph, init_val=dict_init_val)
+    var_dict = tested.as_dict()
     assert var_dict == dict_init_val
 
 
 def test_can_get_values_as_graph(graph, NodeEdgeArray, dict_init_val):
-    gvar = NodeEdgeArray(graph, init_val=dict_init_val)
-    res_graph = gvar.as_nx_graph()
+    tested = NodeEdgeArray(graph, init_val=dict_init_val)
+    res_graph = tested.as_nx_graph()
     if NodeEdgeArray == NodeArray:
         for key in dict_init_val:
             assert res_graph.nodes[key]["value"] == dict_init_val[key]
     else:
         for key in dict_init_val:
             assert res_graph.edges[key]["value"] == dict_init_val[key]
-
-
-def test_can_get_item(graph, NodeEdgeArray, dict_init_val):
-    gvar = NodeEdgeArray(graph, init_val=dict_init_val)
-    for k in dict_init_val:
-        assert gvar[k] == dict_init_val[k]
-    gvar = NodeEdgeArray(graph, init_val=dict_init_val, is_array_2d=True)
-    for k in dict_init_val:
-        assert gvar[k] == dict_init_val[k]
-
-
-def test_can_set_item_correctly(graph, NodeEdgeArray, dict_init_val):
-    index = 4 if NodeEdgeArray == NodeArray else (2, 4)
-    array = np.zeros(len(dict_init_val))
-    array[2] = 5
-
-    gvar = NodeEdgeArray(graph)
-    gvar[index] = 5
-    assert_is_array_equal(gvar.array, array)
-    gvar = NodeEdgeArray(graph, is_array_2d=True)
-    gvar[index] = 5
-    assert_is_array_equal(gvar.array, array.reshape((-1, 1)))
 
 
 @pytest.fixture
@@ -127,45 +136,53 @@ def operated_vals(graph, NodeEdgeArray):
     return gvar_1, gvar_2
 
 
-def test_is_add_correct(operated_vals):
+def test_is_add_correct(operated_vals, graph, NodeEdgeArray):
     a, b = operated_vals
-    add = a + b
-    assert_is_array_equal(add.array, a.array + b.array)
-    add = a + 5
-    assert_is_array_equal(add.array, a.array + 5)
+    tested = a + b
+    correct = NodeEdgeArray(graph, init_val=a.array + b.array)
+    assert tested == correct
+    tested = a + 5
+    correct = NodeEdgeArray(graph, init_val=a.array + 5)
+    assert tested == correct
 
 
-def test_is_subtract_correct(operated_vals):
+def test_is_subtract_correct(operated_vals, graph, NodeEdgeArray):
     a, b = operated_vals
-    sub = a - b
-    assert_is_array_equal(sub.array, a.array - b.array)
-    sub = a - 5
-    assert_is_array_equal(sub.array, a.array - 5)
+    tested = a - b
+    correct = NodeEdgeArray(graph, init_val=a.array - b.array)
+    assert tested == correct
+    tested = a - 5
+    correct = NodeEdgeArray(graph, init_val=a.array - 5)
+    assert tested == correct
 
 
-def test_is_multiply_correct(operated_vals):
+def test_is_multiply_correct(operated_vals, graph, NodeEdgeArray):
     a, b = operated_vals
-    mul = a * b
-    assert_is_array_equal(mul.array, a.array * b.array)
-    mul = a * 5
-    assert_is_array_equal(mul.array, a.array * 5)
+    tested = a * b
+    correct = NodeEdgeArray(graph, init_val=a.array * b.array)
+    assert tested == correct
+    tested = a * 5
+    correct = NodeEdgeArray(graph, init_val=a.array * 5)
+    assert tested == correct
 
 
-def test_is_true_divide_correct(operated_vals):
+def test_is_true_divide_correct(operated_vals, graph, NodeEdgeArray):
     a, b = operated_vals
-    truediv = a / b
-    assert_is_array_equal(truediv.array, a.array / b.array)
-    truediv = a / 4
-    assert_is_array_equal(truediv.array, a.array / 4)
+    tested = a / b
+    correct = NodeEdgeArray(graph, init_val=a.array / b.array)
+    assert tested == correct
+    tested = a / 4
+    correct = NodeEdgeArray(graph, init_val=a.array / 4)
+    assert tested == correct
 
 
 def test_is_matmul_correct(graph, NodeEdgeArray):
     gvar_1 = NodeEdgeArray(graph, init_val=5)
     gvar_2 = NodeEdgeArray(graph, init_val=10)
-    assert gvar_1 @ gvar_2 == 200
+    assert gvar_1 @ gvar_2 == 50 * len(gvar_1.index)
     gvar_1 = NodeEdgeArray(graph, init_val=5, is_array_2d=True)
     gvar_2 = NodeEdgeArray(graph, init_val=10, is_array_2d=True)
-    assert gvar_1.T @ gvar_2 == 200
+    assert gvar_1.T @ gvar_2 == 50 * len(gvar_1.index)
 
 
 @pytest.fixture
@@ -182,12 +199,11 @@ def test_is_matrix_correct(adj_matrix) -> None:
     assert_is_array_equal(adj_matrix.matrix, true_matrix)
 
 
-def test_is_matmul_correct(adj_matrix):
-    nv_val = {0: 1, 2: 2, 4: 3, 6: 4}
-    nv = NodeArray(graph, nv_val)
-    result = (adj_matrix @ nv).as_dict()
-    answer_val = {0: 24, 2: 13, 4: 8, 6: 0}
-    assert result == answer_val
+def test_is_adj_matmul_correct(adj_matrix, graph):
+    nv = NodeArray(graph, init_val={0: 1, 2: 2, 4: 3, 6: 4})
+    result = adj_matrix @ nv
+    answer = NodeArray(graph, init_val={0: 24, 2: 13, 4: 8, 6: 0})
+    assert result == answer
 
 
 @pytest.fixture
@@ -195,13 +211,13 @@ def inc_matrix(graph):
     return IncidenceMatrix(graph)
 
 
-def test_is_matmul_correct(graph, inc_matrix):
+def test_is_inc_matmul_correct(graph, inc_matrix):
     edge_f = {(0, 2): 6, (0, 4): 4, (2, 4): 3, (2, 6): 1, (4, 6): 2}
     od_f = {0: -10, 2: 2, 4: 5, 6: 3}
     edge_flow = EdgeArray(graph, init_val=edge_f)
     od_flow = NodeArray(graph, init_val=od_f)
     matmul_res = inc_matrix @ edge_flow
-    assert_is_array_equal(matmul_res.array, od_flow.array)
+    assert matmul_res == od_flow
 
 
 def test_is_transposed_matmul_correct(graph, inc_matrix):
@@ -210,7 +226,7 @@ def test_is_transposed_matmul_correct(graph, inc_matrix):
     node_label = NodeArray(graph, init_val=label)
     difference = EdgeArray(graph, init_val=diff)
     res = inc_matrix.T @ node_label
-    assert_is_array_equal(res.array, difference.array)
+    assert res == difference
 
 
 @pytest.fixture
