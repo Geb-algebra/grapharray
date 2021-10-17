@@ -82,6 +82,11 @@ class BaseGraphArray:
             raise ValueError("base_graph is not freezed.")
         self._base_graph = base_graph
         self._is_transposed = False
+        self._array: np.ndarray = None  # Dummy implementation
+
+    @property
+    def array(self):
+        return self._array
 
     @property
     def base_graph(self):
@@ -113,7 +118,15 @@ class BaseGraphArray:
 
     @property
     def is_transposed(self):
+        """Whether the array is transposed (i.e., 2-d row vector) or not."""
         return self._is_transposed
+
+    @property
+    def T(self):
+        """Transpose the array."""
+        self._array = self._array.transpose()
+        self._is_transposed = not self._is_transposed
+        return self
 
     def _operation_error_check(self, other, allowed_classes):
         """Error check prior to doing mathematical operations.
@@ -209,18 +222,6 @@ class GraphArray(BaseGraphArray):
         return self._is_2d
 
     @property
-    def is_transposed(self):
-        """Whether the array is transposed (i.e., 2-d row vector) or not."""
-        return self._is_transposed
-
-    @property
-    def T(self):
-        """Transpose the array."""
-        self._array = self._array.T
-        self._is_transposed = not self._is_transposed
-        return self
-
-    @property
     def index(self):
         """Correspondence between the array indices and the nodes/edges.
 
@@ -294,16 +295,9 @@ class GraphArray(BaseGraphArray):
         return self._array @ other.array
 
     def __eq__(self, other):
-        """Compare array element-wise.
-        
-        Returns:
-            (NodeArray, EdgeArray): The result (an array ob boolean)
-                of element-wise comparison
-        """
+        """Whether all the elements of two arrays are equal"""
         self._operation_error_check(other, (self.__class__,))
-        return type(self)(
-            self.base_graph, init_val=(self._array == other._array)
-        )
+        return np.all(self._array == other._array)
 
     def _get_array_index(self, key):
         index = self.index[key]
@@ -358,27 +352,7 @@ class EdgeArray(GraphArray):
         return super(EdgeArray, self).as_nx_graph(assign_to="edge")
 
 
-class BaseMatrix(BaseGraphArray):
-    def __init__(
-        self, base_graph: BaseGraph,
-    ):
-        """Create incidence matrix."""
-        super(BaseMatrix, self).__init__(base_graph)
-
-    @property
-    def is_transposed(self):
-        """Whether the matrix is transposed or not."""
-        return self._is_transposed
-
-    @property
-    def T(self):
-        """Transpose the array"""
-        self.matrix = self.matrix.transpose()
-        self._is_transposed = not self._is_transposed
-        return self
-
-
-class AdjacencyMatrix(BaseMatrix):
+class AdjacencyMatrix(BaseGraphArray):
     """N x N matrix"""
 
     def __init__(self, weight: EdgeArray, sparse_format: str = "csr"):
@@ -388,7 +362,7 @@ class AdjacencyMatrix(BaseMatrix):
 
         """
         super(AdjacencyMatrix, self).__init__(weight.base_graph)
-        self.matrix = nx.to_scipy_sparse_matrix(
+        self._array = nx.to_scipy_sparse_matrix(
             weight.as_nx_graph(),
             nodelist=self.nodes,
             weight="value",
@@ -402,13 +376,13 @@ class AdjacencyMatrix(BaseMatrix):
                 f"with NodeVar, not {type(other)}."
             )
 
-        res_array = self.matrix @ other.array
+        res_array = self._array @ other.array
         return NodeArray(
             self.base_graph, init_val=res_array, is_array_2d=other.is_2d
         )
 
 
-class IncidenceMatrix(BaseMatrix):
+class IncidenceMatrix(BaseGraphArray):
     """Node-edge incidence matrix that can multiplied with NodeVar and EdgeVar.
     """
 
@@ -417,7 +391,7 @@ class IncidenceMatrix(BaseMatrix):
     ):
         """Create incidence matrix."""
         super(IncidenceMatrix, self).__init__(base_graph)
-        self.matrix = nx.incidence_matrix(
+        self._array = nx.incidence_matrix(
             base_graph,
             nodelist=self.nodes,
             edgelist=self.edges,
@@ -447,7 +421,7 @@ class IncidenceMatrix(BaseMatrix):
                 f"not {type(other)}."
             )
 
-        res_array = self.matrix @ other.array
+        res_array = self._array @ other.array
         return type_result(
             self.base_graph, init_val=res_array, is_array_2d=other.is_2d
         )

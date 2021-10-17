@@ -14,17 +14,6 @@ from grapharray.classes import (
 from grapharray.functions import exp
 
 
-def assert_is_array_equal(a, b):
-    if a.shape != b.shape:
-        pytest.fail(f"Shapes does not match: {a.shape} vs {b.shape}")
-    elif np.any(abs(a - b) >= 1e-10):
-        failed_index = list(zip(*np.where(abs(a - b) >= 1e-10)))
-        message = f"Elements {failed_index} does not equal.\n"
-        for i in failed_index:
-            message += f" {i}: {a[i]} vs {b[i]}\n"
-        pytest.fail(message)
-
-
 @pytest.fixture
 def graph():
     g = [(0, 2), (0, 4), (2, 4), (2, 6), (4, 6)]
@@ -196,7 +185,7 @@ def test_is_matrix_correct(adj_matrix) -> None:
     true_matrix = np.array(
         [[0, 6, 4, 0], [0, 0, 3, 1], [0, 0, 0, 2], [0, 0, 0, 0]]
     )
-    assert_is_array_equal(adj_matrix.matrix, true_matrix)
+    assert np.all(adj_matrix.array == true_matrix)
 
 
 def test_is_adj_matmul_correct(adj_matrix, graph):
@@ -234,8 +223,8 @@ def node_edge_array(graph, NodeEdgeArray, dict_init_val):
     return NodeEdgeArray(graph, init_val=dict_init_val)
 
 
-def test_exp(node_edge_array):
-    assert_is_array_equal(
-        exp(node_edge_array).array, np.exp(node_edge_array.array)
+def test_exp(node_edge_array, graph, NodeEdgeArray):
+    assert exp(node_edge_array) == NodeEdgeArray(
+        graph, np.exp(node_edge_array.array)
     )
 
