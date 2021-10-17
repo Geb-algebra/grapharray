@@ -1,0 +1,316 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>grapharray.classes.IncidenceMatrix &mdash; GraphArray  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="grapharray.functions module" href="../grapharray.functions.html" />
+    <link rel="prev" title="grapharray.classes.AdjacencyMatrix" href="grapharray.classes.AdjacencyMatrix.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> GraphArray
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../grapharray.html">grapharray package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../grapharray.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../grapharray.classes.html">grapharray.classes module</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="grapharray.classes.BaseGraph.html">grapharray.classes.BaseGraph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="grapharray.classes.BaseGraphArray.html">grapharray.classes.BaseGraphArray</a></li>
+<li class="toctree-l4"><a class="reference internal" href="grapharray.classes.GraphArray.html">grapharray.classes.GraphArray</a></li>
+<li class="toctree-l4"><a class="reference internal" href="grapharray.classes.NodeArray.html">grapharray.classes.NodeArray</a></li>
+<li class="toctree-l4"><a class="reference internal" href="grapharray.classes.EdgeArray.html">grapharray.classes.EdgeArray</a></li>
+<li class="toctree-l4"><a class="reference internal" href="grapharray.classes.AdjacencyMatrix.html">grapharray.classes.AdjacencyMatrix</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">grapharray.classes.IncidenceMatrix</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../grapharray.functions.html">grapharray.functions module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../grapharray.html#module-grapharray">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GraphArray</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../grapharray.html">grapharray package</a> &raquo;</li>
+        
+          <li><a href="../grapharray.classes.html">grapharray.classes module</a> &raquo;</li>
+        
+      <li>grapharray.classes.IncidenceMatrix</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/_gen/grapharray.classes.IncidenceMatrix.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="grapharray-classes-incidencematrix">
+<h1>grapharray.classes.IncidenceMatrix<a class="headerlink" href="#grapharray-classes-incidencematrix" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="grapharray.classes.IncidenceMatrix">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">grapharray.classes.</span></span><span class="sig-name descname"><span class="pre">IncidenceMatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_graph</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../grapharray.classes.html#grapharray.classes.BaseGraph" title="grapharray.classes.BaseGraph"><span class="pre">grapharray.classes.BaseGraph</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/grapharray/classes.html#IncidenceMatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grapharray.classes.IncidenceMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Node-edge incidence matrix</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="grapharray.classes.IncidenceMatrix.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_graph</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../grapharray.classes.html#grapharray.classes.BaseGraph" title="grapharray.classes.BaseGraph"><span class="pre">grapharray.classes.BaseGraph</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/grapharray/classes.html#IncidenceMatrix.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grapharray.classes.IncidenceMatrix.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create incidence matrix.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#grapharray.classes.IncidenceMatrix.__init__" title="grapharray.classes.IncidenceMatrix.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(base_graph)</p></td>
+<td><p>Create incidence matrix.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code></p></td>
+<td><p>Transpose the array</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></p></td>
+<td><p>Core array</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">base_graph</span></code></p></td>
+<td><p>BaseGraph object on that this array itself is defined</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">edge_to_index</span></code></p></td>
+<td><p>Correspondence between edges and array indices</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">edges</span></code></p></td>
+<td><p>Tuple of all edges</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_transposed</span></code></p></td>
+<td><p>Whether the array is transposed or not.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">node_to_index</span></code></p></td>
+<td><p>Correspondence between nodes and array indices</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nodes</span></code></p></td>
+<td><p>Tuple of all nodes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">number_of_edges</span></code></p></td>
+<td><p>The number of edges in the base graph</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">number_of_nodes</span></code></p></td>
+<td><p>The number of nodes in the base graph</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../grapharray.functions.html" class="btn btn-neutral float-right" title="grapharray.functions module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="grapharray.classes.AdjacencyMatrix.html" class="btn btn-neutral float-left" title="grapharray.classes.AdjacencyMatrix" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2021, Geb
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
