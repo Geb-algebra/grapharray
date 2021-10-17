@@ -211,6 +211,11 @@ class GraphArray(BaseGraphArray):
         """
         return {}
 
+    @property
+    def is_2d(self):
+        """Whether the array is 2-dimensional or not"""
+        return self._is_2d
+
     def as_dict(self) -> dict:
         """Return values of variables as a dictionary keyed by node/edge.
         """

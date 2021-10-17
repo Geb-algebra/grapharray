@@ -361,6 +361,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{}</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Whether the array is 2-dimensional or not&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_2d</span>
+
 <div class="viewcode-block" id="GraphArray.as_dict"><a class="viewcode-back" href="../../grapharray.classes.html#grapharray.classes.GraphArray.as_dict">[docs]</a>    <span class="k">def</span> <span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return values of variables as a dictionary keyed by node/edge.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

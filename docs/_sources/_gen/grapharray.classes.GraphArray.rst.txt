@@ -31,6 +31,7 @@
       ~GraphArray.edge_to_index
       ~GraphArray.edges
       ~GraphArray.index
+      ~GraphArray.is_2d
       ~GraphArray.is_transposed
       ~GraphArray.node_to_index
       ~GraphArray.nodes

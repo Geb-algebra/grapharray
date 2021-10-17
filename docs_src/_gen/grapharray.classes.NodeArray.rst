@@ -31,6 +31,7 @@
       ~NodeArray.edge_to_index
       ~NodeArray.edges
       ~NodeArray.index
+      ~NodeArray.is_2d
       ~NodeArray.is_transposed
       ~NodeArray.node_to_index
       ~NodeArray.nodes

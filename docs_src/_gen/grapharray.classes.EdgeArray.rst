@@ -31,6 +31,7 @@
       ~EdgeArray.edge_to_index
       ~EdgeArray.edges
       ~EdgeArray.index
+      ~EdgeArray.is_2d
       ~EdgeArray.is_transposed
       ~EdgeArray.node_to_index
       ~EdgeArray.nodes

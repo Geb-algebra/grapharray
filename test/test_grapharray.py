@@ -66,9 +66,13 @@ def test_can_set_item(graph, NodeEdgeArray, dict_init_val):
     assert np.all(tested.array == array.reshape((-1, 1)))
 
 
-@pytest.mark.parametrize("is_2d", [False, True])
-def test_can_get_item(graph, NodeEdgeArray, dict_init_val, is_2d):
-    tested = NodeEdgeArray(graph, is_array_2d=is_2d)
+def test_can_get_item(graph, NodeEdgeArray, dict_init_val):
+    tested = NodeEdgeArray(graph, is_array_2d=False)
+    for i, v in dict_init_val.items():
+        tested[i] = v
+    for k in dict_init_val:
+        assert tested[k] == dict_init_val[k]
+    tested = NodeEdgeArray(graph, is_array_2d=True)
     for i, v in dict_init_val.items():
         tested[i] = v
     for k in dict_init_val:
