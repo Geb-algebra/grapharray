@@ -16,12 +16,6 @@ class BaseGraph(nx.DiGraph):
 
     """
 
-    def __init__(self, graph=None):
-        """Run DiGraph.__init__ and setup attributes for defining variables."""
-        super(BaseGraph, self).__init__(graph)
-        self._set_node_to_index()
-        self._set_edge_to_index()
-
     @property
     def node_to_index(self):
         return self._node_to_index
@@ -30,36 +24,14 @@ class BaseGraph(nx.DiGraph):
     def edge_to_index(self):
         return self._edge_to_index
 
-    def _set_node_to_index(self):
-        self._node_to_index = MappingProxyType(
-            {node: i for i, node in enumerate(sorted(self.nodes))}
-        )
-
-    def _set_edge_to_index(self):
-        self._edge_to_index = MappingProxyType(
-            {edge: i for i, edge in enumerate(sorted(self.edges))}
-        )
-
-    def add_node(self, node):
-        super(BaseGraph, self).add_node(node)
-        self._set_node_to_index()
-
-    def add_edge(self, u, v):
-        super(BaseGraph, self).add_edge(u, v)
-        self._set_node_to_index()
-        self._set_edge_to_index()
-
-    def add_nodes_from(self, nodes):
-        super(BaseGraph, self).add_nodes_from(nodes)
-        self._set_node_to_index()
-
-    def add_edges_from(self, edges):
-        super(BaseGraph, self).add_edges_from(edges)
-        self._set_node_to_index()
-        self._set_edge_to_index()
-
     def freeze(self):
         nx.freeze(self)
+        self._node_to_index = MappingProxyType(
+            {node: i for i, node in enumerate(self.nodes)}
+        )
+        self._edge_to_index = MappingProxyType(
+            {edge: i for i, edge in enumerate(self.edges)}
+        )
 
 
 class BaseGraphArray:
