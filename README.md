@@ -1,6 +1,6 @@
 # GraphArray
 
-GraphArray is a class of arrays defined on a network that allows for 
+GraphArray is a class of arrays defined on a network, which allows for 
 fast computation and easy visualization.
 
 When you plan to code some algorithms on networks, using GraphArray as the class
