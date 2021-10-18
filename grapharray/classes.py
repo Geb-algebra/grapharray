@@ -66,7 +66,7 @@ class BaseGraphArray:
     @property
     def array(self):
         """Core array"""
-        return self._array
+        return self._array.copy()
 
     @property
     def base_graph(self):
@@ -257,7 +257,7 @@ class GraphArray(BaseGraphArray):
             res_array = operation_func(other)
         else:
             #  same as res.array  = self.array {+, -, * etc.} other.array
-            res_array = operation_func(other.array)
+            res_array = operation_func(other._array)
         return type(self)(
             self.base_graph, init_val=res_array, is_array_2d=self.is_2d
         )
@@ -285,7 +285,7 @@ class GraphArray(BaseGraphArray):
     def __matmul__(self, other):
         """Inner product of two arrays"""
         self._operation_error_check(other, (self.__class__,))
-        return self._array @ other.array
+        return self._array @ other._array
 
     def __eq__(self, other):
         """Whether all the elements of two arrays are equal"""
@@ -384,7 +384,7 @@ class AdjacencyMatrix(BaseGraphArray):
                 f"with NodeArray, not {type(other)}."
             )
 
-        res_array = self._array @ other.array
+        res_array = self._array @ other._array
         return NodeArray(
             self.base_graph, init_val=res_array, is_array_2d=other.is_2d
         )
@@ -433,7 +433,7 @@ class IncidenceMatrix(BaseGraphArray):
                 f"not {type(other)}."
             )
 
-        res_array = self._array @ other.array
+        res_array = self._array @ other._array
         return type_result(
             self.base_graph, init_val=res_array, is_array_2d=other.is_2d
         )

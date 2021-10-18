@@ -375,7 +375,9 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "metadata": {"nbsphinx": "hidden"},
+   "metadata": {
+    "nbsphinx": "hidden"
+   },
    "outputs": [],
    "source": [
     "import warnings\n",
@@ -398,25 +400,25 @@
      "text": [
       "index\tvalue\n",
       "start\t-12.0\n",
-      "A\t200.0\n",
+      "A\t100.0\n",
       "B\t0.0\n",
       "end\t12.0\n",
       "\n",
       "index\tvalue\n",
       "start\t0.0\n",
-      "A\t0.0\n",
+      "A\t100.0\n",
       "B\t0.0\n",
       "end\t0.0\n",
       "\n",
       "index\tvalue\n",
       "start\t36.0\n",
-      "A\t10000.0\n",
+      "A\t0.0\n",
       "B\t0.0\n",
       "end\t36.0\n",
       "\n",
       "index\tvalue\n",
       "start\t1.0\n",
-      "A\t1.0\n",
+      "A\tinf\n",
       "B\tnan\n",
       "end\t1.0\n",
       "\n"
@@ -553,7 +555,7 @@
      "output_type": "stream",
      "text": [
       "[ -6. 100.   0.   6.]\n",
-      "[-6.  5.  0.  6.]\n"
+      "[ -6. 100.   0.   6.]\n"
      ]
     }
    ],
@@ -620,9 +622,9 @@
      "output_type": "stream",
      "text": [
       "calculation with NodeArray ============\n",
-      "0.6041619999999996\n",
+      "0.5805510000000003\n",
       "calculation with np.ndarray =========\n",
-      "0.34616900000000017\n"
+      "0.36343000000000014\n"
      ]
     }
    ],
@@ -652,9 +654,9 @@
      "output_type": "stream",
      "text": [
       "calculation with EdgeArray ============\n",
-      "0.894021\n",
+      "0.887826\n",
       "calculation with np.ndarray =========\n",
-      "0.6393550000000006\n"
+      "0.6614020000000003\n"
      ]
     }
    ],
@@ -685,9 +687,9 @@
      "output_type": "stream",
      "text": [
       "calculation with graphvar ============\n",
-      "5.087744000000001\n",
+      "5.138795000000001\n",
       "calculation with np.ndarray =========\n",
-      "4.908389999999999\n"
+      "4.9411369999999994\n"
      ]
     }
    ],
@@ -700,18 +702,6 @@
     "e = e.array\n",
     "A = A.array\n",
     "print(timeit.timeit(\"A @ e\", **timeit_args))"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {
-    "collapsed": false,
-    "pycharm": {
-     "name": "#%% md\n"
-    }
-   },
-   "source": [
-    "Specifically, these examples show that the performance degragations using GraphArray are constant regardless of the size of the network and the types of the operation. Thus, the degregation is almost zero in a large networks."
    ]
   }
  ],

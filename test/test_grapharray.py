@@ -1,4 +1,3 @@
-from typing import Union
 import pytest
 
 import networkx as nx

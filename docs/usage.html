@@ -696,25 +696,25 @@ index   value
 <div class="highlight"><pre>
 index   value
 start   -12.0
-A       200.0
+A       100.0
 B       0.0
 end     12.0
 
 index   value
 start   0.0
-A       0.0
+A       100.0
 B       0.0
 end     0.0
 
 index   value
 start   36.0
-A       10000.0
+A       0.0
 B       0.0
 end     36.0
 
 index   value
 start   1.0
-A       1.0
+A       inf
 B       nan
 end     1.0
 
@@ -789,7 +789,7 @@ end     1.2
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 [ -6. 100.   0.   6.]
-[-6.  5.  0.  6.]
+[ -6. 100.   0.   6.]
 </pre></div></div>
 </div>
 <p>Thus, these operation is as fast as that of np.ndarray. The larger the network is, the smaller the difference between the speed of these two methods are.</p>
@@ -838,9 +838,9 @@ end     1.2
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 calculation with NodeArray ============
-0.6041619999999996
+0.5805510000000003
 calculation with np.ndarray =========
-0.34616900000000017
+0.36343000000000014
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -865,9 +865,9 @@ calculation with np.ndarray =========
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 calculation with EdgeArray ============
-0.894021
+0.887826
 calculation with np.ndarray =========
-0.6393550000000006
+0.6614020000000003
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -892,12 +892,11 @@ calculation with np.ndarray =========
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 calculation with graphvar ============
-5.087744000000001
+5.138795000000001
 calculation with np.ndarray =========
-4.908389999999999
+4.9411369999999994
 </pre></div></div>
 </div>
-<p>Specifically, these examples show that the performance degragations using GraphArray are constant regardless of the size of the network and the types of the operation. Thus, the degregation is almost zero in a large networks.</p>
 </section>
 </section>
 

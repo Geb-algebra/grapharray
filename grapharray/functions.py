@@ -2,12 +2,10 @@
 
 from __future__ import annotations
 
-import json
 from typing import Union, Callable
-import _io
 import numpy as np
 
-from grapharray.classes import BaseGraph, NodeArray, EdgeArray
+from grapharray.classes import NodeArray, EdgeArray
 
 
 def apply_array_function(var: Union[NodeArray, EdgeArray], function: Callable):

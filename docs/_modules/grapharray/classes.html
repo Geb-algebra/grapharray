@@ -216,7 +216,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">array</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Core array&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">base_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -407,7 +407,7 @@
             <span class="n">res_array</span> <span class="o">=</span> <span class="n">operation_func</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1">#  same as res.array  = self.array {+, -, * etc.} other.array</span>
-            <span class="n">res_array</span> <span class="o">=</span> <span class="n">operation_func</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
+            <span class="n">res_array</span> <span class="o">=</span> <span class="n">operation_func</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_array</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">base_graph</span><span class="p">,</span> <span class="n">init_val</span><span class="o">=</span><span class="n">res_array</span><span class="p">,</span> <span class="n">is_array_2d</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_2d</span>
         <span class="p">)</span>
@@ -435,7 +435,7 @@
     <span class="k">def</span> <span class="fm">__matmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Inner product of two arrays&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_operation_error_check</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,))</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span> <span class="o">@</span> <span class="n">other</span><span class="o">.</span><span class="n">array</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span> <span class="o">@</span> <span class="n">other</span><span class="o">.</span><span class="n">_array</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Whether all the elements of two arrays are equal&quot;&quot;&quot;</span>
@@ -534,7 +534,7 @@
                 <span class="sa">f</span><span class="s2">&quot;with NodeArray, not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
 
-        <span class="n">res_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span> <span class="o">@</span> <span class="n">other</span><span class="o">.</span><span class="n">array</span>
+        <span class="n">res_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span> <span class="o">@</span> <span class="n">other</span><span class="o">.</span><span class="n">_array</span>
         <span class="k">return</span> <span class="n">NodeArray</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">base_graph</span><span class="p">,</span> <span class="n">init_val</span><span class="o">=</span><span class="n">res_array</span><span class="p">,</span> <span class="n">is_array_2d</span><span class="o">=</span><span class="n">other</span><span class="o">.</span><span class="n">is_2d</span>
         <span class="p">)</span></div>
@@ -583,7 +583,7 @@
                 <span class="sa">f</span><span class="s2">&quot;not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
 
-        <span class="n">res_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span> <span class="o">@</span> <span class="n">other</span><span class="o">.</span><span class="n">array</span>
+        <span class="n">res_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span> <span class="o">@</span> <span class="n">other</span><span class="o">.</span><span class="n">_array</span>
         <span class="k">return</span> <span class="n">type_result</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">base_graph</span><span class="p">,</span> <span class="n">init_val</span><span class="o">=</span><span class="n">res_array</span><span class="p">,</span> <span class="n">is_array_2d</span><span class="o">=</span><span class="n">other</span><span class="o">.</span><span class="n">is_2d</span>
         <span class="p">)</span></div>
