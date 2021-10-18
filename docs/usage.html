@@ -678,7 +678,7 @@ index   value
 <h2>Mathematical Operations<a class="headerlink" href="#Mathematical-Operations" title="Permalink to this headline">¶</a></h2>
 <p>NodeArray and EdgeArray objects can be added to, subtracted from, multiplied by and divided by another objects of the same classes.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -689,7 +689,7 @@ index   value
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
+<div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -720,18 +720,9 @@ end     1.0
 
 </pre></div></div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/Users/watanabe/pythonlib/grapharray/classes.py:260: RuntimeWarning: invalid value encountered in true_divide
-  res_array = operation_func(other.array)
-</pre></div></div>
-</div>
 <p>NodeArray and EdgeArray objects also operated with scalar values.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -782,7 +773,7 @@ end     1.2
 <h2>Computational Efficiency<a class="headerlink" href="#Computational-Efficiency" title="Permalink to this headline">¶</a></h2>
 <p>NodeArray and EdgeArray stores variables’ values as np.ndarray and the mathematical operations shown above are operated with these arrays.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -803,7 +794,7 @@ end     1.2
 </div>
 <p>Thus, these operation is as fast as that of np.ndarray. The larger the network is, the smaller the difference between the speed of these two methods are.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -826,7 +817,7 @@ end     1.2
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -847,13 +838,13 @@ end     1.2
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 calculation with NodeArray ============
-0.6202320000000001
+0.6041619999999996
 calculation with np.ndarray =========
-0.35947600000000035
+0.34616900000000017
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -874,13 +865,13 @@ calculation with np.ndarray =========
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 calculation with EdgeArray ============
-0.9205559999999999
+0.894021
 calculation with np.ndarray =========
-0.6567759999999998
+0.6393550000000006
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -901,9 +892,9 @@ calculation with np.ndarray =========
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 calculation with graphvar ============
-5.071677
+5.087744000000001
 calculation with np.ndarray =========
-4.934284
+4.908389999999999
 </pre></div></div>
 </div>
 <p>Specifically, these examples show that the performance degragations using GraphArray are constant regardless of the size of the network and the types of the operation. Thus, the degregation is almost zero in a large networks.</p>
