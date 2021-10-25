@@ -240,6 +240,20 @@ class GraphArray(BaseGraphArray):
             raise ValueError("assign_to must be 'node' or 'edge'")
         return res_graph
 
+    def get_copy(self):
+        """Make a copy of self. 
+        
+        The array of the copy created by this method is a copy of the original,
+        while the base_graph of the copy is the same instance of the original.
+        This is different from the copy created by copy.deepcopy() in that both
+        the array and the base_graph is a copy of the original.
+        """
+        return type(self)(
+            self.base_graph,
+            init_val=self._array.copy(),
+            is_array_2d=self.is_2d,
+        )
+
     def _operation(self, other, operation_func):
         """Do an arithmetic operation.
 
