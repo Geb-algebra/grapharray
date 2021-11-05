@@ -16,6 +16,7 @@
       ~NodeArray.__init__
       ~NodeArray.as_dict
       ~NodeArray.as_nx_graph
+      ~NodeArray.get_copy
    
    
 

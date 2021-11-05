@@ -158,8 +158,10 @@
 <span class="kn">from</span> <span class="nn">grapharray.classes</span> <span class="kn">import</span> <span class="n">NodeArray</span><span class="p">,</span> <span class="n">EdgeArray</span>
 
 
-<div class="viewcode-block" id="apply_array_function"><a class="viewcode-back" href="../../grapharray.functions.html#grapharray.functions.apply_array_function">[docs]</a><span class="k">def</span> <span class="nf">apply_array_function</span><span class="p">(</span><span class="n">var</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NodeArray</span><span class="p">,</span> <span class="n">EdgeArray</span><span class="p">],</span> <span class="n">function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Execute a function for np.ndarray to the array of NodeVar or EdgeVar.</span>
+<div class="viewcode-block" id="apply_element_wise_function"><a class="viewcode-back" href="../../grapharray.functions.html#grapharray.functions.apply_element_wise_function">[docs]</a><span class="k">def</span> <span class="nf">apply_element_wise_function</span><span class="p">(</span>
+    <span class="n">var</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NodeArray</span><span class="p">,</span> <span class="n">EdgeArray</span><span class="p">],</span> <span class="n">function</span><span class="p">:</span> <span class="n">Callable</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NodeArray</span><span class="p">,</span> <span class="n">EdgeArray</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Execute a element-wise function for np.ndarray to NodeVar or EdgeVar.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        var: A variable to apply function</span>
@@ -167,9 +169,9 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        An instance of the same class as var&#39;s, whose array is the result of</span>
-<span class="sd">        the function passed.</span>
+<span class="sd">        the function passed i.e., function(var.array).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">res_array</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
+    <span class="n">res_array</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">_array</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">NodeArray</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">NodeArray</span><span class="p">(</span>
             <span class="n">var</span><span class="o">.</span><span class="n">base_graph</span><span class="p">,</span> <span class="n">init_val</span><span class="o">=</span><span class="n">res_array</span><span class="p">,</span> <span class="n">is_array_2d</span><span class="o">=</span><span class="n">var</span><span class="o">.</span><span class="n">is_2d</span>
@@ -185,19 +187,44 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="exp"><a class="viewcode-back" href="../../grapharray.functions.html#grapharray.functions.exp">[docs]</a><span class="k">def</span> <span class="nf">exp</span><span class="p">(</span><span class="n">var</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NodeArray</span><span class="p">,</span> <span class="n">EdgeArray</span><span class="p">]):</span>
+<div class="viewcode-block" id="exp"><a class="viewcode-back" href="../../grapharray.functions.html#grapharray.functions.exp">[docs]</a><span class="k">def</span> <span class="nf">exp</span><span class="p">(</span><span class="n">var</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NodeArray</span><span class="p">,</span> <span class="n">EdgeArray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NodeArray</span><span class="p">,</span> <span class="n">EdgeArray</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Element-wise exponential&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">apply_array_function</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">apply_element_wise_function</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="log"><a class="viewcode-back" href="../../grapharray.functions.html#grapharray.functions.log">[docs]</a><span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">var</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NodeArray</span><span class="p">,</span> <span class="n">EdgeArray</span><span class="p">]):</span>
+<div class="viewcode-block" id="log"><a class="viewcode-back" href="../../grapharray.functions.html#grapharray.functions.log">[docs]</a><span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">var</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NodeArray</span><span class="p">,</span> <span class="n">EdgeArray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NodeArray</span><span class="p">,</span> <span class="n">EdgeArray</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Element-wise natural logarithm&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">apply_array_function</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">apply_element_wise_function</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="sum"><a class="viewcode-back" href="../../grapharray.functions.html#grapharray.functions.sum">[docs]</a><span class="k">def</span> <span class="nf">sum</span><span class="p">(</span><span class="n">var</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NodeArray</span><span class="p">,</span> <span class="n">EdgeArray</span><span class="p">]):</span>
+<div class="viewcode-block" id="get_representative_value"><a class="viewcode-back" href="../../grapharray.functions.html#grapharray.functions.get_representative_value">[docs]</a><span class="k">def</span> <span class="nf">get_representative_value</span><span class="p">(</span>
+    <span class="n">var</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NodeArray</span><span class="p">,</span> <span class="n">EdgeArray</span><span class="p">],</span> <span class="n">function</span><span class="p">:</span> <span class="n">Callable</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Apply a function for np.ndarray that returns a scalar to Node/EdgeArray</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        var: A variable to apply function</span>
+<span class="sd">        function: A function for np.ndarray to apply.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (float) The result of &quot;function(var)&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">function</span><span class="p">(</span><span class="n">var</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sum"><a class="viewcode-back" href="../../grapharray.functions.html#grapharray.functions.sum">[docs]</a><span class="k">def</span> <span class="nf">sum</span><span class="p">(</span><span class="n">var</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NodeArray</span><span class="p">,</span> <span class="n">EdgeArray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Sum up all variables&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">array</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">_array</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="max"><a class="viewcode-back" href="../../grapharray.functions.html#grapharray.functions.max">[docs]</a><span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="n">var</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NodeArray</span><span class="p">,</span> <span class="n">EdgeArray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;The maximum of all variables&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">_array</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="min"><a class="viewcode-back" href="../../grapharray.functions.html#grapharray.functions.min">[docs]</a><span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="n">var</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NodeArray</span><span class="p">,</span> <span class="n">EdgeArray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;The minimum of all variables&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">_array</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

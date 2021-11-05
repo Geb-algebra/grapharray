@@ -16,6 +16,7 @@
       ~GraphArray.__init__
       ~GraphArray.as_dict
       ~GraphArray.as_nx_graph
+      ~GraphArray.get_copy
    
    
 

@@ -16,6 +16,7 @@
       ~EdgeArray.__init__
       ~EdgeArray.as_dict
       ~EdgeArray.as_nx_graph
+      ~EdgeArray.get_copy
    
    
 

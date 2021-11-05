@@ -390,6 +390,20 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;assign_to must be &#39;node&#39; or &#39;edge&#39;&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">res_graph</span></div>
 
+<div class="viewcode-block" id="GraphArray.get_copy"><a class="viewcode-back" href="../../grapharray.classes.html#grapharray.classes.GraphArray.get_copy">[docs]</a>    <span class="k">def</span> <span class="nf">get_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Make a copy of self. </span>
+<span class="sd">        </span>
+<span class="sd">        The array of the copy created by this method is a copy of the original,</span>
+<span class="sd">        while the base_graph of the copy is the same instance of the original.</span>
+<span class="sd">        This is different from the copy created by copy.deepcopy() in that both</span>
+<span class="sd">        the array and the base_graph is a copy of the original.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">base_graph</span><span class="p">,</span>
+            <span class="n">init_val</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+            <span class="n">is_array_2d</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_2d</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
     <span class="k">def</span> <span class="nf">_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">operation_func</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Do an arithmetic operation.</span>
 

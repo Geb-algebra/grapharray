@@ -401,6 +401,16 @@ by avoiding unnecessary array creation.</p>
 <dd><p>Return a nx.DiGraph with the array elements as node/edge attributes.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="grapharray.classes.GraphArray.get_copy">
+<span class="sig-name descname"><span class="pre">get_copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/grapharray/classes.html#GraphArray.get_copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grapharray.classes.GraphArray.get_copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a copy of self.</p>
+<p>The array of the copy created by this method is a copy of the original,
+while the base_graph of the copy is the same instance of the original.
+This is different from the copy created by copy.deepcopy() in that both
+the array and the base_graph is a copy of the original.</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="grapharray.classes.GraphArray.index">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">index</span></span><a class="headerlink" href="#grapharray.classes.GraphArray.index" title="Permalink to this definition">¶</a></dt>
