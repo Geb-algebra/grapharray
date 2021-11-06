@@ -3,7 +3,6 @@
 # License: MIT License
 
 from setuptools import setup
-import grapharray
 
 DESCRIPTION = "GraphArray : Python package for treating arrays defined on a network, which allows for fast computation and easy visualization."
 NAME = "grapharray"
@@ -13,8 +12,13 @@ PROJECT_URLS = {
     "Documentation": "https://geb-algebra.github.io/grapharray/",
     "Source Code": "https://github.com/Geb-algebra/grapharray",
 }
-VERSION = grapharray.__version__
 PYTHON_REQUIRES = ">=3.8"
+
+with open("grapharray/__init__.py") as fid:
+    for line in fid:
+        if line.startswith("__version__"):
+            VERSION = line.strip().split()[-1][1:-1]
+            break
 
 INSTALL_REQUIRES = ["networkx>=2.6.2", "numpy>=1.20.3", "scipy>=1.7.1"]
 
