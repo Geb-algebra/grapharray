@@ -1,8 +1,8 @@
 # GraphArray
 
 [![PyPI version](https://badge.fury.io/py/grapharray.svg)](https://badge.fury.io/py/grapharray)
-[![Conda version](https://anaconda.org/conda-forge/grapharray/badges/version.svg)](https://anaconda.org/conda-forge/grapharray/)
-[![Total downloads](https://anaconda.org/conda-forge/grapharray/badges/downloads.svg)](https://anaconda.org/conda-forge/grapharray/)
+[![Conda version](https://img.shields.io/conda/vn/conda-forge/grapharray.svg)](https://anaconda.org/conda-forge/grapharray/)
+[![Total downloads](https://img.shields.io/conda/dn/conda-forge/grapharray.svg)](https://anaconda.org/conda-forge/grapharray/)
 
 GraphArray is a class of arrays defined on a network, which allows for 
 fast computation and easy visualization.
