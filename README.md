@@ -1,5 +1,9 @@
 # GraphArray
 
+[![PyPI version](https://badge.fury.io/py/grapharray.svg)](https://badge.fury.io/py/grapharray)
+[![Conda version](https://anaconda.org/conda-forge/grapharray/badges/version.svg)](https://anaconda.org/conda-forge/grapharray/)
+![Total downloads](https://anaconda.org/conda-forge/grapharray/badges/downloads.svg)
+
 GraphArray is a class of arrays defined on a network, which allows for 
 fast computation and easy visualization.
 
@@ -68,7 +72,12 @@ Mathematical operations can be done as arrays for nodes.
 
 # Installation
 
+From pypi:
 ```
 pip install grapharray
+```
+or from conda:
+```
+conda install -c conda-forge grapharray
 ```
 
