@@ -33,7 +33,7 @@ B       1.0
 C       1.0
 
 >>> a["B"]  # Get a specific element using a node index
-10.0
+1.0
 >>> a["B"] = 10  # Modify
 >>> a
 index   value
