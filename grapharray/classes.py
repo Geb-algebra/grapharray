@@ -164,7 +164,7 @@ class GraphArray(BaseGraphArray):
         init_val must be either scalar, NodeVar object or
         {node: value} dictionary.
         if a scalar is given, all elements of array are set to the init_val.
-        if a NodeVar object is given, a copy of its array is used
+        if a NodeArray object is given, a copy of its array is used
         as initial values.
         if a dictionary is given, the value on each node/edge is used
         as initial value of corresponding node/node.
@@ -335,6 +335,10 @@ class GraphArray(BaseGraphArray):
     def __len__(self):
         """Return the length of array"""
         return len(self._array)
+
+    def __iter__(self):
+        """Iterate over all nodes or edges"""
+        return self.index.__iter__()
 
 
 class NodeArray(GraphArray):
