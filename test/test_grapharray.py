@@ -2,6 +2,7 @@ import pytest
 
 import networkx as nx
 import numpy as np
+import copy
 from grapharray.classes import (
     BaseGraph,
     BaseGraphArray,
@@ -127,6 +128,18 @@ def test_iteration(graph, NodeEdgeArray):
     tested = NodeEdgeArray(graph)
     for i, item in enumerate(tested):
         assert item == list(tested.index.keys())[i]
+
+
+def test_disabling(graph, NodeEdgeArray):
+    tested = NodeEdgeArray(graph)
+    items = copy.copy(tested._enabled_items)
+    for i in items:
+        tested.disable(i)
+        items.remove(i)
+        assert tested._enabled_items == items
+    with pytest.raises(ValueError) as exc:
+        tested.disable(i)
+    assert exc.value.args[0] == f"{i} is already disabled."
 
 
 def test_is_operation_between_different_graphs_denied(graph, NodeEdgeArray):

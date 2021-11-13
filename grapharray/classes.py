@@ -199,6 +199,7 @@ class GraphArray(BaseGraphArray):
                     f"Init_val must be either "
                     f"{type(self)}, scalar, dict or np.ndarray."
                 )
+        self._enabled_items = [n for n in self.index]
         self._is_2d = is_array_2d
         if is_array_2d:  # reshape the array to 2-dimension.
             self._array = self._array.reshape((-1, 1))
@@ -215,6 +216,19 @@ class GraphArray(BaseGraphArray):
     def is_2d(self):
         """Whether the array is 2-dimensional or not"""
         return self._is_2d
+
+    def enable(self, item, allow_duplicate=False):
+        if not allow_duplicate and item in self._enabled_items:
+            raise ValueError(f"{item} is already enabled.")
+        else:
+            self._enabled_items.append(item)
+
+    def disable(self, item, allow_duplicate=False):
+        try:
+            self._enabled_items.remove(item)
+        except ValueError:
+            if not allow_duplicate:
+                raise ValueError(f"{item} is already disabled.")
 
     def as_dict(self) -> dict:
         """Return values of variables as a dictionary keyed by node/edge.
