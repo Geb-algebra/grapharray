@@ -7,37 +7,7 @@ from grapharray.classes import (
     BaseGraph,
     BaseGraphArray,
     NodeArray,
-    EdgeArray,
-    AdjacencyMatrix,
-    IncidenceMatrix,
 )
-from grapharray.functions import exp, argmin, argmax
-
-
-@pytest.fixture
-def graph():
-    g = [(0, 2), (0, 4), (2, 4), (2, 6), (4, 6)]
-    bg = BaseGraph(g)
-    bg.freeze()
-    return bg
-
-
-@pytest.fixture(params=[NodeArray, EdgeArray])
-def NodeEdgeArray(request):
-    return request.param
-
-
-@pytest.fixture
-def node_edge_index(graph, NodeEdgeArray):
-    if NodeEdgeArray == NodeArray:
-        return graph.node_to_index
-    else:
-        return graph.edge_to_index
-
-
-@pytest.fixture
-def dict_init_val(node_edge_index):
-    return {n: 3.1415 * i for i, n in enumerate(node_edge_index)}
 
 
 def test_is_invalid_type_base_graph_denied():
@@ -209,75 +179,3 @@ def test_is_matmul_correct(graph, NodeEdgeArray):
     gvar_1 = NodeEdgeArray(graph, init_val=5, is_array_2d=True)
     gvar_2 = NodeEdgeArray(graph, init_val=10, is_array_2d=True)
     assert gvar_1.T @ gvar_2 == 50 * len(gvar_1.index)
-
-
-@pytest.fixture
-def adj_matrix(graph):
-    edge_f = {(0, 2): 6, (0, 4): 4, (2, 4): 3, (2, 6): 1, (4, 6): 2}
-    weight = EdgeArray(graph, edge_f)
-    return AdjacencyMatrix(weight)
-
-
-def test_is_matrix_correct(adj_matrix) -> None:
-    true_matrix = np.array(
-        [[0, 6, 4, 0], [0, 0, 3, 1], [0, 0, 0, 2], [0, 0, 0, 0]]
-    )
-    assert np.all(adj_matrix.array == true_matrix)
-
-
-def test_is_adj_matmul_correct(adj_matrix, graph):
-    nv = NodeArray(graph, init_val={0: 1, 2: 2, 4: 3, 6: 4})
-    result = adj_matrix @ nv
-    answer = NodeArray(graph, init_val={0: 24, 2: 13, 4: 8, 6: 0})
-    assert result == answer
-
-
-@pytest.fixture
-def inc_matrix(graph):
-    return IncidenceMatrix(graph)
-
-
-def test_is_inc_matmul_correct(graph, inc_matrix):
-    edge_f = {(0, 2): 6, (0, 4): 4, (2, 4): 3, (2, 6): 1, (4, 6): 2}
-    od_f = {0: -10, 2: 2, 4: 5, 6: 3}
-    edge_flow = EdgeArray(graph, init_val=edge_f)
-    od_flow = NodeArray(graph, init_val=od_f)
-    matmul_res = inc_matrix @ edge_flow
-    assert matmul_res == od_flow
-
-
-def test_is_transposed_matmul_correct(graph, inc_matrix):
-    label = {0: 0, 2: 2, 4: 3, 6: 5}
-    diff = {(0, 2): 2, (0, 4): 3, (2, 4): 1, (2, 6): 3, (4, 6): 2}
-    node_label = NodeArray(graph, init_val=label)
-    difference = EdgeArray(graph, init_val=diff)
-    res = inc_matrix.T @ node_label
-    assert res == difference
-
-
-@pytest.fixture
-def node_edge_array(graph, NodeEdgeArray, dict_init_val):
-    return NodeEdgeArray(graph, init_val=dict_init_val)
-
-
-def test_exp(node_edge_array, graph, NodeEdgeArray):
-    assert exp(node_edge_array) == NodeEdgeArray(
-        graph, np.exp(node_edge_array.array)
-    )
-
-
-def test_argmax(node_edge_array, graph, NodeEdgeArray):
-    assert (
-        argmax(node_edge_array) == 6
-        if type(node_edge_array) == NodeArray
-        else (4, 6)
-    )
-
-
-def test_argmin(node_edge_array, graph, NodeEdgeArray):
-    assert (
-        argmin(node_edge_array) == 0
-        if type(node_edge_array) == NodeArray
-        else (0, 2)
-    )
-
