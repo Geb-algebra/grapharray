@@ -1,8 +1,9 @@
 # GraphArray
 
-[![PyPI version](https://badge.fury.io/py/grapharray.svg)](https://badge.fury.io/py/grapharray)
+[![PyPI version](https://img.shields.io/pypi/v/grapharray)](https://pypi.org/project/grapharray/)
+[![PyPI downloads](https://img.shields.io/pypi/dm/grapharray?color=blue&label=pypi%20downloads)](https://pypi.org/project/grapharray/)
 [![Conda version](https://img.shields.io/conda/vn/conda-forge/grapharray.svg)](https://anaconda.org/conda-forge/grapharray/)
-[![Total downloads](https://img.shields.io/conda/dn/conda-forge/grapharray.svg)](https://anaconda.org/conda-forge/grapharray/)
+[![Conda downloads](https://img.shields.io/conda/dn/conda-forge/grapharray?label=conda-forge%20downloads)](https://anaconda.org/conda-forge/grapharray/)
 
 GraphArray is a class of arrays defined on a network, which allows for 
 fast computation and easy visualization.
