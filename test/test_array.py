@@ -17,12 +17,6 @@ def test_is_invalid_type_base_graph_denied():
         BaseGraphArray(nx.DiGraph())
 
 
-def test_is_length_correct(graph, NodeEdgeArray):
-    tested = len(NodeEdgeArray(graph))
-    correct = 4 if NodeEdgeArray == NodeArray else 5
-    assert tested == correct
-
-
 def test_can_set_item(graph, NodeEdgeArray, dict_init_val):
     index = 4 if (NodeEdgeArray == NodeArray) else (2, 4)
     array = np.zeros(len(dict_init_val))
@@ -92,12 +86,6 @@ def test_can_get_values_as_graph(graph, NodeEdgeArray, dict_init_val):
     else:
         for key in dict_init_val:
             assert res_graph.edges[key]["value"] == dict_init_val[key]
-
-
-def test_iteration(graph, NodeEdgeArray):
-    tested = NodeEdgeArray(graph)
-    for i, item in enumerate(tested):
-        assert item == list(tested.index.keys())[i]
 
 
 def test_disabling(graph, NodeEdgeArray):

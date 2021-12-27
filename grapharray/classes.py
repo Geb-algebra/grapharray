@@ -233,9 +233,7 @@ class GraphArray(BaseGraphArray):
     def as_dict(self) -> dict:
         """Return values of variables as a dictionary keyed by node/edge.
         """
-        value = {
-            item: self._array[index] for item, index in self.index.items()
-        }
+        value = {item: self[item] for item in self.index}
         return value
 
     def as_nx_graph(self, assign_to=None):
@@ -347,12 +345,12 @@ class GraphArray(BaseGraphArray):
         return res
 
     def __len__(self):
-        """Return the length of array"""
-        return len(self._array)
+        """Return the number of enabled nodes/edges"""
+        return len(self._enabled_items)
 
     def __iter__(self):
-        """Iterate over all nodes or edges"""
-        return self.index.__iter__()
+        """Iterate over all enabled nodes or edges"""
+        return self._enabled_items
 
 
 class NodeArray(GraphArray):
