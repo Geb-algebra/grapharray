@@ -382,6 +382,22 @@ class EdgeArray(GraphArray):
         """
         return super(EdgeArray, self).as_nx_graph(assign_to="edge")
 
+    def as_succ_dict(self):
+        dict_with_succ = {}
+        for i in self.base_graph.nodes:
+            dict_with_succ[i] = {}
+            for j in self.base_graph.succ[i]:
+                dict_with_succ[i][j] = self[i, j]
+        return dict_with_succ
+
+    def as_pred_dict(self):
+        dict_with_pred = {}
+        for j in self.base_graph.nodes:
+            dict_with_pred[j] = {}
+            for i in self.base_graph.pred[j]:
+                dict_with_pred[j][i] = self[i, j]
+        return dict_with_pred
+
 
 class AdjacencyMatrix(BaseGraphArray):
     """N x N matrix"""
