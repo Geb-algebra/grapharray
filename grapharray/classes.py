@@ -2,9 +2,12 @@
 """
 
 from __future__ import annotations
+from typing import Union
 import numpy as np
 import networkx as nx
 from types import MappingProxyType
+
+from .drawing import draw
 
 
 class BaseGraph(nx.DiGraph):
@@ -397,6 +400,16 @@ class EdgeArray(GraphArray):
             for i in self.base_graph.pred[j]:
                 dict_with_pred[j][i] = self[i, j]
         return dict_with_pred
+
+    def draw(
+        self,
+        pos: dict = None,
+        arrows: bool = True,
+        with_labels: bool = True,
+        connectionstyle: Union[str, None] = None,
+        **kwargs,
+    ):
+        draw(self, pos, arrows, with_labels, connectionstyle, **kwargs)
 
 
 class AdjacencyMatrix(BaseGraphArray):
