@@ -202,7 +202,7 @@ class GraphArray(BaseGraphArray):
                     f"Init_val must be either "
                     f"{type(self)}, scalar, dict or np.ndarray."
                 )
-        self._enabled_items = [n for n in self.index]
+        self._enabled_items = None
         self._is_2d = is_array_2d
         if is_array_2d:  # reshape the array to 2-dimension.
             self._array = self._array.reshape((-1, 1))
@@ -221,12 +221,16 @@ class GraphArray(BaseGraphArray):
         return self._is_2d
 
     def enable(self, item, allow_duplicate=False):
+        if self._enabled_items is None:
+            self._enabled_items = [n for n in self.index]
         if not allow_duplicate and item in self._enabled_items:
             raise ValueError(f"{item} is already enabled.")
         else:
             self._enabled_items.append(item)
 
     def disable(self, item, allow_duplicate=False):
+        if self._enabled_items is None:
+            self._enabled_items = [n for n in self.index]
         try:
             self._enabled_items.remove(item)
         except ValueError:
