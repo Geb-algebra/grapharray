@@ -23,6 +23,21 @@ def test_is_length_correct(graph, NodeEdgeArray):
     assert tested == correct
 
 
+def test_print_correctly(graph, NodeEdgeArray, dict_init_val):
+    tested_array = NodeEdgeArray(graph)
+    for key, value in dict_init_val.items():
+        tested_array[key] = value
+    print_str = tested_array.__str__()
+    if NodeEdgeArray == NodeArray:
+        item_to_index = tested_array.node_to_index
+    else:
+        item_to_index = tested_array.edge_to_index
+    correct = "".join(
+        f"{n}:\t{3.1415*i}\n" for i, n in enumerate(item_to_index)
+    )
+    assert correct == print_str
+
+
 def test_can_set_item(graph, NodeEdgeArray, dict_init_val):
     index = 4 if (NodeEdgeArray == NodeArray) else (2, 4)
     array = np.zeros(len(dict_init_val))

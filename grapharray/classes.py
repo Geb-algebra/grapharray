@@ -2,6 +2,7 @@
 """
 
 from __future__ import annotations
+from abc import ABCMeta, abstractmethod
 import numpy as np
 import networkx as nx
 from types import MappingProxyType
@@ -51,6 +52,9 @@ class BaseGraphArray:
     All attributes are aliases of that of BaseGraph and thus are read-only.
     """
 
+    _is_transposed: bool = False
+    _array: np.ndarray
+
     def __init__(
         self, base_graph: BaseGraph,
     ):
@@ -63,8 +67,6 @@ class BaseGraphArray:
         elif not nx.is_frozen(base_graph):
             raise ValueError("base_graph is not freezed.")
         self._base_graph: BaseGraph = base_graph
-        self._is_transposed: bool = False
-        self._array: np.ndarray = None  # Dummy implementation
 
     @property
     def array(self):
@@ -146,12 +148,7 @@ class BaseGraphArray:
             )
 
     def __str__(self):
-        """Return a string for print function"""
-        return (
-            f"{self.__class__.__name__} object with "
-            f"{self.number_of_nodes} nodes and "
-            f"{self.number_of_edges} edges."
-        )
+        pass
 
 
 class GraphArray(BaseGraphArray):
@@ -179,6 +176,8 @@ class GraphArray(BaseGraphArray):
         array (np.ndarray): An array that has values linked to nodes/edges.
 
     """
+
+    _max_print_size: int = 10
 
     def __init__(
         self, base_graph: BaseGraph, init_val=0, is_array_2d: bool = False,
@@ -211,7 +210,7 @@ class GraphArray(BaseGraphArray):
     def index(self):
         """Correspondence between the array indices and the nodes/edges.
 
-        This is only a dummy implementation here and overridden in subclasses.
+        This is an abstract class.
         """
         return {}
 
@@ -270,6 +269,18 @@ class GraphArray(BaseGraphArray):
             init_val=self._array.copy(),
             is_array_2d=self.is_2d,
         )
+
+    @property
+    def max_print_size(self):
+        return self._max_print_size
+
+    @max_print_size.setter
+    def max_print_size(self, value):
+        if value <= 0 or type(value) != int:
+            raise ValueError(
+                "max_print_size must be positive (non-zero) integer."
+            )
+        self._max_print_size = value
 
     def _operation(self, other, operation_func):
         """Do an arithmetic operation.
@@ -343,11 +354,17 @@ class GraphArray(BaseGraphArray):
 
     def __repr__(self):
         """Return a string representation of the array"""
-        var_dict = self.as_dict()
-        res = "index\tvalue\n"
-        for index, value in var_dict.items():
-            res += f"{index}\t{value}\n"
+        res = ""
+        for index in list(self.index.keys())[: self.max_print_size]:
+            res += f"{index}:\t{self[index]}\n"
+        if len(self.index) > self._max_print_size:
+            res += "...\n"
+            last_index = list(self.index.keys())[-1]
+            res += f"{last_index}:\t{self[last_index]}\n"
         return res
+
+    def __str__(self):
+        return self.__repr__()
 
     def __len__(self):
         """Return the length of array"""
