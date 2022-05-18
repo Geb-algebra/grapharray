@@ -19,11 +19,15 @@ class BaseGraph(nx.DiGraph):
     @property
     def node_to_index(self):
         """Correspondence between nodes and array indices"""
+        if not nx.is_frozen(self):
+            raise ValueError("Run BaseGraph.freeze() to access node_to_index")
         return self._node_to_index
 
     @property
     def edge_to_index(self):
         """Correspondence between edges and array indices"""
+        if not nx.is_frozen(self):
+            raise ValueError("Run BaseGraph.freeze() to access edge_to_index")
         return self._edge_to_index
 
     def freeze(self):
@@ -42,9 +46,8 @@ class BaseGraph(nx.DiGraph):
 
 
 class BaseGraphArray:
-    """ Base object for creating vectors and matrices on networks.
+    """ Base class for arrays and matrices on networks.
 
-    This set up attributes used in both node variables and edge variables.
     All attributes are aliases of that of BaseGraph and thus are read-only.
     """
 
@@ -65,7 +68,7 @@ class BaseGraphArray:
 
     @property
     def array(self):
-        """Core array"""
+        """numpy.ndarray that has the values for each nodes/edges."""
         return self._array.copy()
 
     @property
@@ -152,7 +155,7 @@ class BaseGraphArray:
 
 
 class GraphArray(BaseGraphArray):
-    """Extracted codes shared between NodeArray and EdgeArray.
+    """Abstract class for NodeArray and EdgeArray.
 
     Args:
         base_graph (BaseGraph): The graph on that the variable is defined.
