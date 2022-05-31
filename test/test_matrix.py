@@ -35,7 +35,7 @@ def test_is_adj_matmul_correct(adj_matrix, graph):
     assert result == answer
 
 
-def test_is_inc_matmul_correct(graph, inc_matrix):
+def test_is_incidence_matrix_matmul_edgearray_correct(graph, inc_matrix):
     edge_f = {(0, 2): 6, (0, 4): 4, (2, 4): 3, (2, 6): 1, (4, 6): 2}
     od_f = {0: -10, 2: 2, 4: 5, 6: 3}
     edge_flow = EdgeArray(graph, init_val=edge_f)
@@ -44,10 +44,10 @@ def test_is_inc_matmul_correct(graph, inc_matrix):
     assert matmul_res == od_flow
 
 
-def test_is_transposed_matmul_correct(graph, inc_matrix):
+def test_is_incidence_matrix_matmul_nodearray_correct(graph, inc_matrix):
     label = {0: 0, 2: 2, 4: 3, 6: 5}
     diff = {(0, 2): 2, (0, 4): 3, (2, 4): 1, (2, 6): 3, (4, 6): 2}
     node_label = NodeArray(graph, init_val=label)
     difference = EdgeArray(graph, init_val=diff)
-    res = inc_matrix.T @ node_label
+    res = inc_matrix @ node_label
     assert res == difference

@@ -2,10 +2,11 @@
 """
 
 from __future__ import annotations
-from abc import ABCMeta, abstractmethod
 import numpy as np
 import networkx as nx
 from types import MappingProxyType
+
+import scipy
 
 
 class BaseGraph(nx.DiGraph):
@@ -52,7 +53,6 @@ class BaseGraphArray:
     All attributes are aliases of that of BaseGraph and thus are read-only.
     """
 
-    _is_transposed: bool = False
     _array: np.ndarray
 
     def __init__(
@@ -107,18 +107,6 @@ class BaseGraphArray:
     def number_of_edges(self):
         """The number of edges in the base graph"""
         return self.base_graph.number_of_edges()
-
-    @property
-    def is_transposed(self):
-        """Whether the array is transposed or not."""
-        return self._is_transposed
-
-    @property
-    def T(self):
-        """Transpose the array"""
-        self._array = self._array.transpose()
-        self._is_transposed = not self._is_transposed
-        return self
 
     def _operation_error_check(self, other, allowed_classes):
         """Error check prior to doing mathematical operations.
@@ -180,7 +168,7 @@ class GraphArray(BaseGraphArray):
     _max_print_size: int = 10
 
     def __init__(
-        self, base_graph: BaseGraph, init_val=0, is_array_2d: bool = False,
+        self, base_graph: BaseGraph, init_val=0,
     ):
         """Set the initial value of array."""
         super(GraphArray, self).__init__(base_graph)
@@ -202,9 +190,6 @@ class GraphArray(BaseGraphArray):
                     f"{type(self)}, scalar, dict or np.ndarray."
                 )
         self._enabled_items = [n for n in self.index]
-        self._is_2d = is_array_2d
-        if is_array_2d:  # reshape the array to 2-dimension.
-            self._array = self._array.reshape((-1, 1))
 
     @property
     def index(self):
@@ -213,11 +198,6 @@ class GraphArray(BaseGraphArray):
         This is an abstract class.
         """
         return {}
-
-    @property
-    def is_2d(self):
-        """Whether the array is 2-dimensional or not"""
-        return self._is_2d
 
     def enable(self, item, allow_duplicate=False):
         if not allow_duplicate and item in self._enabled_items:
@@ -264,11 +244,7 @@ class GraphArray(BaseGraphArray):
         This is different from the copy created by copy.deepcopy() in that both
         the array and the base_graph is a copy of the original.
         """
-        return type(self)(
-            self.base_graph,
-            init_val=self._array.copy(),
-            is_array_2d=self.is_2d,
-        )
+        return type(self)(self.base_graph, init_val=self._array.copy(),)
 
     @property
     def max_print_size(self):
@@ -300,9 +276,7 @@ class GraphArray(BaseGraphArray):
         else:
             #  same as res.array  = self.array {+, -, * etc.} other.array
             res_array = operation_func(other._array)
-        return type(self)(
-            self.base_graph, init_val=res_array, is_array_2d=self.is_2d
-        )
+        return type(self)(self.base_graph, init_val=res_array,)
 
     def __add__(self, other):
         """Element-wise addition"""
@@ -334,23 +308,13 @@ class GraphArray(BaseGraphArray):
         self._operation_error_check(other, (self.__class__,))
         return np.all(self._array == other._array)
 
-    def _get_array_index(self, key):
-        """Get the array index corresponding to the specified node or edge"""
-        index = self.index[key]
-        if self.is_2d:
-            if self.is_transposed:
-                index = (0, index)
-            else:
-                index = (index, 0)
-        return index
-
     def __getitem__(self, key):
         """Get the array element corresponding to the specified node or edge"""
-        return self._array[self._get_array_index(key)]
+        return self._array[self.index[key]]
 
     def __setitem__(self, key, value):
         """Set value to the array corresponding to the specified node or edge"""
-        self._array[self._get_array_index(key)] = value
+        self._array[self.index[key]] = value
 
     def __repr__(self):
         """Return a string representation of the array"""
@@ -453,9 +417,7 @@ class AdjacencyMatrix(BaseGraphArray):
             )
 
         res_array = self._array @ other._array
-        return NodeArray(
-            self.base_graph, init_val=res_array, is_array_2d=other.is_2d
-        )
+        return NodeArray(self.base_graph, init_val=res_array,)
 
 
 class IncidenceMatrix(BaseGraphArray):
@@ -466,7 +428,7 @@ class IncidenceMatrix(BaseGraphArray):
     ):
         """Create incidence matrix."""
         super(IncidenceMatrix, self).__init__(base_graph)
-        self._array = nx.incidence_matrix(
+        self._array: scipy.sparse.csr_matrix = nx.incidence_matrix(
             base_graph,
             nodelist=self.nodes,
             edgelist=self.edges,
@@ -475,34 +437,26 @@ class IncidenceMatrix(BaseGraphArray):
 
     def __matmul__(self, other):
         """Return the vector-matrix product.
-        
-        If the matrix is not transposed, the opponent of the operation 
-        must be an EdgeArray object and the result is a Nodearray object.
-        Otherwise the opponent must be an NodeArray object and the result 
-        is EdgeArray.
 
         Args:
-            other: EdgeVar if not transposed, otherwise NodeVar.
+            other: NodeArray or EdgeArray.
 
         Returns:
-            NodeVar if not transposed, otherwise EdgeVar.
+            NodeArray if other is EdgeArray, otherwise EdgeArray.
         """
-        if not self._is_transposed:
-            type_other = EdgeArray
-            type_result = NodeArray
+        if type(other) == EdgeArray:
+            # print(self._array.shape, other._array.shape)
+            res_array = self._array @ other._array
+            res_type = NodeArray
+        elif type(other) == NodeArray:
+            print(self._array.T.shape, other._array.shape)
+            res_array = self._array.T @ other._array
+            res_type = EdgeArray
         else:
-            type_other = NodeArray
-            type_result = EdgeArray
-
-        if not isinstance(other, type_other):
             raise TypeError(
-                f'{"transposed "*self.is_transposed}incidence matrix can '
-                f"be multiplied only with {str(type_other)}, "
+                f"Incidence matrix can "
+                f"be multiplied only with NodeArray or EdgeArray, "
                 f"not {type(other)}."
             )
-
-        res_array = self._array @ other._array
-        return type_result(
-            self.base_graph, init_val=res_array, is_array_2d=other.is_2d
-        )
+        return res_type(self.base_graph, init_val=res_array,)
 

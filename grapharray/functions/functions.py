@@ -23,13 +23,9 @@ def apply_element_wise_function(
     """
     res_array = function(var._array)
     if isinstance(var, NodeArray):
-        return NodeArray(
-            var.base_graph, init_val=res_array, is_array_2d=var.is_2d
-        )
+        return NodeArray(var.base_graph, init_val=res_array)
     elif isinstance(var, EdgeArray):
-        return EdgeArray(
-            var.base_graph, init_val=res_array, is_array_2d=var.is_2d
-        )
+        return EdgeArray(var.base_graph, init_val=res_array)
     else:
         raise TypeError(
             f"Invalid type of argument {type(var)}. "

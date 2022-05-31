@@ -46,18 +46,18 @@ def test_can_set_item(graph, NodeEdgeArray, dict_init_val):
     tested = NodeEdgeArray(graph)
     tested[index] = 5
     assert np.all(tested.array == array)
-    tested = NodeEdgeArray(graph, is_array_2d=True)
+    tested = NodeEdgeArray(graph)
     tested[index] = 5
-    assert np.all(tested.array == array.reshape((-1, 1)))
+    assert np.all(tested.array == array)
 
 
 def test_can_get_item(graph, NodeEdgeArray, dict_init_val):
-    tested = NodeEdgeArray(graph, is_array_2d=False)
+    tested = NodeEdgeArray(graph)
     for i, v in dict_init_val.items():
         tested[i] = v
     for k in dict_init_val:
         assert tested[k] == dict_init_val[k]
-    tested = NodeEdgeArray(graph, is_array_2d=True)
+    tested = NodeEdgeArray(graph)
     for i, v in dict_init_val.items():
         tested[i] = v
     for k in dict_init_val:
@@ -85,11 +85,6 @@ def test_can_init_val_set_with_self(graph, NodeEdgeArray):
     original = NodeEdgeArray(graph, init_val=3.1415)
     tested = NodeEdgeArray(graph, init_val=original)
     assert tested == original
-
-
-def test_can_array_set_vertical(graph, NodeEdgeArray):
-    tested = NodeEdgeArray(graph, is_array_2d=True)
-    assert tested.array.shape == (len(tested.index), 1)
 
 
 def test_can_get_values_as_dict(graph, NodeEdgeArray, dict_init_val):
@@ -191,6 +186,3 @@ def test_is_matmul_correct(graph, NodeEdgeArray):
     gvar_1 = NodeEdgeArray(graph, init_val=5)
     gvar_2 = NodeEdgeArray(graph, init_val=10)
     assert gvar_1 @ gvar_2 == 50 * len(gvar_1.index)
-    gvar_1 = NodeEdgeArray(graph, init_val=5, is_array_2d=True)
-    gvar_2 = NodeEdgeArray(graph, init_val=10, is_array_2d=True)
-    assert gvar_1.T @ gvar_2 == 50 * len(gvar_1.index)
